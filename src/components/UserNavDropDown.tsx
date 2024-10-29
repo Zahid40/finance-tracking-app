@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import {  SignOutButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { SignInButton, SignUpButton } from "@/features/auth/components/AuthButtons";
 
 export default function UserNavDropdown() {
  const {user} = useUser();
@@ -83,12 +84,10 @@ export default function UserNavDropdown() {
 
           <>
             <DropdownMenuItem >
-              <LogIn className="mr-2 h-4 w-4" />
-              <Link href={'/sign-in'}>Sign In</Link>
+              <SignInButton variant="ghost" icon className="w-full justify-start" />
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <UserPlus className="mr-2 h-4 w-4" />
-              <Link href={'/sign-up'}>Sign Up</Link>
+            <SignUpButton variant="ghost" icon className="w-full justify-start" />
             </DropdownMenuItem>
           </>
         </SignedOut>

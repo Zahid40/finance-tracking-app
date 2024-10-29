@@ -11,7 +11,7 @@ export default function Navbar() {
         <div>
           <Link className="text-xl font-semibold" href={"/"}>
             <p>
-              Track<span className="text-green-500">Z</span>
+              Fin<span className="text-green-500">Z</span>
             </p>
           </Link>
         </div>
