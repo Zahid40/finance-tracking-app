@@ -7,7 +7,7 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
+    <main className="container  max-w-3xl w-full  px-4">
       <Navbar/>
       {children}
     </main>

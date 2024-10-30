@@ -1,16 +1,16 @@
-import { z } from 'zod';
+// /features/category/schema/category.schema.ts
+import { z } from "zod";
 
 export const CategorySchema = z.object({
-  userId: z.string(),
-  name: z.string(),
-  current_balance: z.number().optional(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  userId: z.string().min(1 , "User ID is required"),
+  name: z.string().min( 3 , "Category name is required and Must contain at Least 3 characters").max(40 , "Maximum length is 40 characters"),
+  current_balance: z.number().min(0).default(0),
 });
 
+
 export const CategoryFormSchema = z.object({
-  name: z.string().min(3).max(40),
-  current_balance: z.number().min(0),
+  name: z.string().min( 3 , "Category name is required and Must contain at Least 3 characters").max(40 , "Maximum length is 40 characters"),
+  current_balance: z.number().min(0).default(0),
 });
 
 export const CategoryUpdateSchema = CategorySchema.partial();
