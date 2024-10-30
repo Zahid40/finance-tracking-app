@@ -1,8 +1,9 @@
 // /features/category/model/category.model.ts
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface CategoryDocument extends Document {
-  userId: string;
+  _id: Types.ObjectId; 
+  userId: Types.ObjectId; 
   name: string;
   current_balance: number;
   createdAt: Date;
@@ -11,11 +12,12 @@ export interface CategoryDocument extends Document {
 
 const CategorySchema = new Schema<CategoryDocument>(
   {
-    userId: { type: String, required: true },
+    _id: { type: Schema.Types.ObjectId , auto : true }, // Reference the User model
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference the User model
     name: { type: String, required: true },
     current_balance: { type: Number, default: 0 },
   },
-  { timestamps: true } // Automatically adds and updates createdAt and updatedAt
+  { timestamps: true }
 );
 
 export default mongoose.models.Category || mongoose.model<CategoryDocument>("Category", CategorySchema);

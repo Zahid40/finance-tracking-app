@@ -28,7 +28,7 @@ import { CategoryFormType, CategoryType } from "../types/category.type";
 import { useUser } from "@clerk/nextjs";
 
 export function CategoryForm() {
-  const {user} = useUser();
+  const { user } = useUser();
   const form = useForm<CategoryFormType>({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
@@ -40,11 +40,11 @@ export function CategoryForm() {
   async function onSubmit(values: CategoryFormType) {
     try {
       console.log(values);
-      
-      const data : CategoryType = {
-        userId : user?.id!,
-        ...values
-      }
+
+      const data: CategoryType = {
+        userId: user?.publicMetadata.dbUserId as string,
+        ...values,
+      };
       console.log(data);
       const response = await fetch("/api/category", {
         method: "POST",
@@ -55,7 +55,6 @@ export function CategoryForm() {
       });
 
       console.log(response);
-      
 
       if (!response.ok) throw new Error("Failed to create category");
 
