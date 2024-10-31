@@ -20,39 +20,14 @@ import {
 
 export const description = "A line chart with a label"
 
-const chartData = [
-  { month: "January", desktop: 1086, mobile: 80 },
-  { month: "February", desktop: 3005, mobile: 200 },
-  { month: "March", desktop: 37, mobile: 120 },
-  { month: "April", desktop: 383, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 430 },
-  { month: "June", desktop: 2104, mobile: 140 },
-  { month: "June", desktop: 204, mobile: 140 },
-  { month: "June", desktop: 2104, mobile: 140 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "June", desktop: 6104, mobile: 140 },
-  { month: "June", desktop: 2104, mobile: 140 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "June", desktop: 40, mobile: 140 },
-]
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
-
-export function TrackChart() {
+export function TrackChart(props:{chartData : any , chartConfig : ChartConfig , title : string , desc : string}) {
+  const {chartData , chartConfig , title , desc} = props;
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Track Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{desc}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -100,12 +75,7 @@ export function TrackChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
+        
       </CardFooter>
     </Card>
   )

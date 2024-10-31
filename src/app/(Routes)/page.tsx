@@ -1,4 +1,4 @@
-import { TrackChart } from "@/components/TrackChart";
+import { TrackChart } from "@/features/category/components/TrackChart";
 
 export default function Home() {
   return (

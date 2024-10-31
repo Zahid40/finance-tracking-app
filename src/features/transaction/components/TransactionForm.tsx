@@ -23,29 +23,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CategoryFormSchema } from "../schema/category.schema";
-import { CategoryFormType, CategoryType } from "../types/category.type";
 import { useUser } from "@clerk/nextjs";
-import { createCategory, revalidateCategories } from "@/features/category/action/category.action";
+import {
+  
+  revalidateCategories,
+} from "@/features/category/action/category.action";
 import { startTransition } from "react";
 import { useRouter } from "next/navigation";
+import { TransactionFormType } from "../types/transaction.types";
+import { TransactionFormSchema } from "../schema/transaction.schema";
+import { createTransaction } from "../action/transaction.action";
+import { CategoryType } from "@/features/category/types/category.type";
 
-export function CategoryForm() {
+export function TransactionForm(props : { categoryId : CategoryType["_id"]}) {
   const { user } = useUser();
   const router = useRouter();
-  const userId = user?.publicMetadata.dbUserId as string
-  const form = useForm<CategoryFormType>({
-    resolver: zodResolver(CategoryFormSchema),
+  const userId = user?.publicMetadata.dbUserId as string;
+  const {categoryId} = props;
+  const form = useForm<TransactionFormType>({
+    resolver: zodResolver(TransactionFormSchema),
     defaultValues: {
       name: "",
-      current_balance: undefined,
+      description: "",
+      transactionAmount: 0,
+      transactionType: true, // Credit
     },
   });
 
-  async function onSubmit(data: CategoryFormType) {
-
+  async function onSubmit(data: TransactionFormType) {
     // Call server action directly
-    const result = await createCategory(data , userId );
+    const result = await createTransaction(data, userId , categoryId);
 
     if (result.success) {
       toast.success("Category created successfully!");
@@ -53,10 +60,8 @@ export function CategoryForm() {
       await revalidateCategories();
 
       // Trigger a React re-render to reflect updated data
-      
-        router.refresh(); // Requires `useRouter` from 'next/navigation'
-    
-    
+
+      router.refresh(); // Requires `useRouter` from 'next/navigation'
     } else {
       // Display validation errors or other errors returned by the action
       toast.error(result.errors?.join(", ") || "Failed to create category");
@@ -97,7 +102,7 @@ export function CategoryForm() {
 
               <FormField
                 control={form.control}
-                name="current_balance"
+                name="transactionAmount"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Current Balance</FormLabel>
