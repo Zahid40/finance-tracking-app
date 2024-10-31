@@ -24,22 +24,23 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
-import {
-  
-  revalidateCategories,
-} from "@/features/category/action/category.action";
+import { revalidateCategories } from "@/features/category/action/category.action";
 import { startTransition } from "react";
 import { useRouter } from "next/navigation";
-import { TransactionFormType } from "../types/transaction.types";
+import {
+  TransactionFormType,
+  TransactionType,
+} from "../types/transaction.types";
 import { TransactionFormSchema } from "../schema/transaction.schema";
 import { createTransaction } from "../action/transaction.action";
-import { CategoryType } from "@/features/category/types/category.type";
 
-export function TransactionForm(props : { categoryId : CategoryType["_id"]}) {
+export function TransactionForm(props: {
+  categoryId: TransactionType["categoryId"];
+}) {
   const { user } = useUser();
   const router = useRouter();
   const userId = user?.publicMetadata.dbUserId as string;
-  const {categoryId} = props;
+  const { categoryId } = props;
   const form = useForm<TransactionFormType>({
     resolver: zodResolver(TransactionFormSchema),
     defaultValues: {
@@ -52,7 +53,7 @@ export function TransactionForm(props : { categoryId : CategoryType["_id"]}) {
 
   async function onSubmit(data: TransactionFormType) {
     // Call server action directly
-    const result = await createTransaction(data, userId , categoryId);
+    const result = await createTransaction(data, userId, categoryId);
 
     if (result.success) {
       toast.success("Category created successfully!");
