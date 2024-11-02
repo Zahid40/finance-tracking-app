@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useState } from "react";
 
 import {
   Form,
@@ -21,11 +22,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { revalidateCategories } from "@/features/category/action/category.action";
-import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   TransactionFormType,
@@ -33,107 +34,150 @@ import {
 } from "../types/transaction.types";
 import { TransactionFormSchema } from "../schema/transaction.schema";
 import { createTransaction } from "../action/transaction.action";
+import { Textarea } from "@/components/ui/textarea";
 
 export function TransactionForm(props: {
   categoryId: TransactionType["categoryId"];
+  transactionType: TransactionType["transactionType"];
 }) {
   const { user } = useUser();
   const router = useRouter();
   const userId = user?.publicMetadata.dbUserId as string;
-  const { categoryId } = props;
+  const { categoryId, transactionType: initialTransactionType } = props;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<TransactionFormType>({
     resolver: zodResolver(TransactionFormSchema),
     defaultValues: {
       name: "",
       description: "",
       transactionAmount: 0,
-      transactionType: true, // Credit
+      transactionType: initialTransactionType || "Credit",
     },
   });
 
   async function onSubmit(data: TransactionFormType) {
-    // Call server action directly
-    const result = await createTransaction(data, userId, categoryId);
+    setIsSubmitting(true);
+    const finalData: TransactionType = {
+      userId,
+      categoryId,
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-    if (result.success) {
-      toast.success("Category created successfully!");
-      form.reset();
-      await revalidateCategories();
+    try {
+      const result = await createTransaction(finalData);
 
-      // Trigger a React re-render to reflect updated data
-
-      router.refresh(); // Requires `useRouter` from 'next/navigation'
-    } else {
-      // Display validation errors or other errors returned by the action
-      toast.error(result.errors?.join(", ") || "Failed to create category");
+      if (result.success) {
+        toast.success("Transaction created successfully!");
+        form.reset();
+        await revalidateCategories();
+        router.refresh();
+      } else {
+        toast.error(
+          result.errors?.join(", ") || "Failed to create transaction"
+        );
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-green-50 p-4">
-      <Card className="w-full max-w-md bg-white shadow-lg">
-        <CardHeader className="bg-green-600 text-white">
-          <CardTitle className="text-2xl">Create Category</CardTitle>
-          <CardDescription className="text-green-100">
-            Fill out the form below to create a new category.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="mt-6">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-8 max-w-3xl mx-auto py-10"
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Bankz" type="text" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Category name eg : Bank1 , Investment2
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="transactionAmount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Balance</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="500"
-                        type="number"
-                        value={field.value || ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              ? parseFloat(e.target.value)
-                              : undefined
-                          )
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Current amount in this category
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="w-full ">
+      <CardContent className="mt-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="transactionType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Transaction Type</FormLabel>
+                  <FormControl>
+                    <div className="flex space-x-2">
+                      {["Credit", "Debit"].map((type) => (
+                        <Button
+                          key={type}
+                          type="button"
+                          variant={field.value === type ? "default" : "outline"}
+                          onClick={() => field.onChange(type)}
+                          className="flex-1"
+                        >
+                          {type}
+                        </Button>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Transaction Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Groceries, Salary" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="transactionAmount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Add any additional details here..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter>
+        <Button
+          type="submit"
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          className="w-full"
+        >
+          {isSubmitting ? "Submitting..." : "Create Transaction"}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

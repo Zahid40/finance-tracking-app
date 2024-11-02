@@ -10,20 +10,17 @@ export const TransactionSchema = z.object({
     .string()
     .min(1, "Category ID is required")
     .regex(objectIdRegex, "Invalid Category ID format"),
-  userId: z
-    .string()
-    .min(1, "User ID is required")
-    .regex(objectIdRegex, "Invalid User ID format"),
+  userId: z.string().regex(objectIdRegex)
+    .min(1,"At least one category ID is required"),
   transactionAmount: z.number().nonnegative("Amount must be positive"),
-  transactionType : z.boolean({
+  transactionType: z.enum(["Credit", "Debit"], {
     required_error: "Transaction type is required",
-    invalid_type_error: "Transaction type must be a Credit or Debit",
-  }) ,
+  }),
   name: z
     .string()
     .min(3, "Transaction name must contain at least 3 characters")
     .max(40, "Transaction name must be 40 characters or less"),
-  description: z.string().optional(),
+  description: z.string().max(20, "Maximum 20 Characters Allowed").optional(),
   createdAt: z
     .string()
     .refine(
@@ -35,15 +32,15 @@ export const TransactionSchema = z.object({
     .string()
     .refine(
       (date) => !isNaN(Date.parse(date)),
-      "Invalid date format for updatedAt"
+      "Invalid date format for createdAt"
     ),
 });
 
 export const TransactionFormSchema = TransactionSchema.pick({
   name: true,
   description: true,
-  transactionAmount : true , 
-  transactionType : true
+  transactionAmount: true,
+  transactionType: true,
 });
 
 export const TransactionUpdateSchema = TransactionSchema.partial();

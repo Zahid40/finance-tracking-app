@@ -6,8 +6,8 @@ export interface TransactionDocument extends Document {
   _id: Types.ObjectId;
   categoryId: Types.ObjectId;
   userId: Types.ObjectId;
-  transactionAmount: number; // rs . 560
-  transactionType: boolean; // Credit = true , Debit  = false
+  transactionAmount: number; // e.g., 560
+  transactionType: string; // Credit, Debit, or Transfer
   name: string;
   description?: string;
   createdAt: Date;
@@ -18,13 +18,13 @@ export interface TransactionDocument extends Document {
   {
     _id: { type: Schema.Types.ObjectId, auto: true },
     categoryId: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     transactionAmount: { type: Number, required: true },
-    transactionType: { type: Boolean, required: true },
+    transactionType: { type: String, required: true },
     name: { type: String, required: true },
     description: { type: String },
   },

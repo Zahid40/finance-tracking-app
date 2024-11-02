@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Assume these components are defined elsewhere
 import { CategoryForm } from "@/features/category/components/CategoryForm";
 import { fetchCategories } from "@/features/category/action/category.action";
 import { useUser } from "@clerk/nextjs";
@@ -22,16 +21,21 @@ import CategoryCard from "@/features/category/components/CategoryCard";
 import { TrackChart } from "@/features/category/components/TrackChart";
 import { CategoryType } from "@/features/category/types/category.type";
 import { Plus } from "lucide-react";
+import { TransactionForm } from "@/features/transaction/components/TransactionForm";
+import TransactionButton from "@/features/transaction/components/TransactionButton";
+import { TransactionType } from "@/features/transaction/types/transaction.types";
+import { fetchTransactions } from "@/features/transaction/action/transaction.action";
+import TransactionCard from "@/features/transaction/components/TransactionCard";
 
 export default function Component() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
-    null
-  );
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
+  const [transactions, setTransactions] = useState<TransactionType[]>([]);
 
   const { user } = useUser();
   const userId: CategoryType["_id"] = user?.publicMetadata.dbUserId as string;
+
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -46,6 +50,24 @@ export default function Component() {
 
     loadCategories();
   }, [userId]);
+
+  // Load transactions whenever a category is selected
+  const loadTransactions = async () => {
+    try {
+      const transactionData = await fetchTransactions(userId, selectedCategory?._id!);
+      setTransactions(transactionData);
+      toast.success("Transactions loaded successfully!");
+    } catch (error) {
+      console.error("Error loading transactions:", error);
+      toast.error("Failed to load transactions. Please try again.");
+    }
+  };
+  useEffect(() => {
+    if (selectedCategory) {
+      loadTransactions();
+    }
+  }, [selectedCategory]);
+
 
   const chartData = [
     { month: "January", desktop: 200 },
@@ -82,7 +104,7 @@ export default function Component() {
       </div>
 
       <Drawer open={isCreateDrawerOpen} onOpenChange={setIsCreateDrawerOpen}>
-        <DrawerContent>
+        <DrawerContent className="max-w-3xl m-auto">
           <DrawerHeader>
             <DrawerTitle>Create New Category</DrawerTitle>
             <DrawerDescription>
@@ -102,7 +124,7 @@ export default function Component() {
         open={!!selectedCategory}
         onOpenChange={() => setSelectedCategory(null)}
       >
-        <DrawerContent className="h-[100dvh] ">
+        <DrawerContent className="h-[100dvh] max-w-3xl m-auto">
           <DrawerHeader>
             <DrawerTitle>{selectedCategory?.name}</DrawerTitle>
             <DrawerDescription>
@@ -117,22 +139,28 @@ export default function Component() {
               </Button>
             </DrawerClose>
           </DrawerHeader>
+          
+          <TrackChart
+            chartData={chartData}
+            chartConfig={chartConfig}
+            title={selectedCategory?.name as string}
+            desc={selectedCategory?.name as string}
+          />
+          <TransactionButton categoryId={selectedCategory?._id!}  />
+          
           <ScrollArea className="h-full">
-            <div className="p-4 space-y-6">
-              <TrackChart
-                chartData={chartData}
-                chartConfig={chartConfig}
-                title={selectedCategory?.name as string}
-                desc={selectedCategory?.name as string}
-              />
-
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Transactions</h2>
-                {/* Replace with actual transaction data */}
-                kk
-              </div>
+            <div className="p-4 space-y-1">
+              <h2 className="text-lg font-semibold">Transactions</h2>
+              {transactions.length > 0 ? (
+                transactions.map((transaction) => (
+                  <TransactionCard transaction={transaction} key={transaction._id} />
+                ))
+              ) : (
+                <p>No transactions available for this category.</p>
+              )}
             </div>
           </ScrollArea>
+          
           <DrawerFooter></DrawerFooter>
         </DrawerContent>
       </Drawer>
