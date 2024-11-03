@@ -25,29 +25,27 @@ export default function TransactionButton(props: {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <div className="flex space-x-2">
-          <DialogTrigger asChild>
+        <div className="flex justify-center items-center w-full m-auto space-x-2 p-4">
+          <DialogTrigger asChild className="flex-1">
             <Button
               onClick={() => setTransactionType("Credit")}
-              variant="outline"
+              variant="default"
             >
               <Plus className="mr-2 h-4 w-4" /> Add
             </Button>
           </DialogTrigger>
-          <DialogTrigger asChild>
+          <DialogTrigger asChild className="flex-1">
             <Button
               onClick={() => setTransactionType("Debit")}
-              variant="outline"
+              variant="destructive"
             >
               <Minus className="mr-2 h-4 w-4" /> Subtract
             </Button>
           </DialogTrigger>
         </div>
-        <DialogContent className=" max-w-3xl m-auto">
+        <DialogContent className=" max-w-xl m-auto">
           <DialogHeader>
-            <DialogTitle>
-              Transaction
-            </DialogTitle>
+            <DialogTitle>Transaction</DialogTitle>
             <DialogDescription>
               Fill in the details for your transaction.
             </DialogDescription>
@@ -55,6 +53,7 @@ export default function TransactionButton(props: {
           <TransactionForm
             categoryId={categoryId}
             transactionType={transactionType}
+            isOpen={setOpen}
           />
         </DialogContent>
       </Dialog>

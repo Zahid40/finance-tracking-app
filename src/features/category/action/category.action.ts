@@ -10,6 +10,7 @@ import {
   CategoryFormType,
   CategoryType,
 } from "@/features/category/types/category.type";
+import Transaction from "@/features/transaction/model/transaction.model";
 
 
 // Caching function to get categories, using Next.js cache settings
@@ -112,3 +113,24 @@ export const createCategory = async (
     return { success: false, errors: ["Server error occurred."] };
   }
 };
+
+export const deleteCategory = cache(async (userId: string, categoryId: string): Promise<{ success: boolean; message?: string }> => {
+  // Connect to the database
+  await connect();
+
+  try {
+    // Find and delete the category by userId and categoryId
+    const category = await Category.findOneAndDelete({ _id: categoryId, userId });
+    if (!category) {
+      return { success: false, message: "Category not found or not authorized" };
+    }
+
+    // Delete all transactions related to this category
+    await Transaction.deleteMany({ userId, categoryId });
+
+    return { success: true, message: "Category and related transactions deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    return { success: false, message: "Failed to delete category and transactions" };
+  }
+});

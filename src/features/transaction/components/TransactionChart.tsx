@@ -1,7 +1,7 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Bar, CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
+
+import {  CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
 
 import {
   Card,
@@ -18,22 +18,16 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { TransactionsChartDataType } from "@/features/transaction/types/transaction.types"
-import { toCapitalizeFirstLetter } from "@/utils/string.utils"
-import { formatRelative, subDays } from "date-fns"
 import { currencyFormatter } from "@/utils/currencyFormatter.utils"
 
 export const description = "A line chart with a label"
 
 
-export function TrackChart(props:{chartData : TransactionsChartDataType[] , chartConfig : ChartConfig , title : string , desc : string}) {
-  const {chartData , chartConfig , title , desc} = props;
+export function TrackChart(props:{chartData : TransactionsChartDataType[] , chartConfig : ChartConfig }) {
+  const {chartData , chartConfig } = props;
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{desc}</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="border-0 shadow-none p-0">
+      <CardContent className="p-4">
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer

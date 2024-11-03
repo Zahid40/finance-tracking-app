@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,18 +15,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
-import { revalidateCategories } from "@/features/category/action/category.action";
-import { useRouter } from "next/navigation";
 import {
   TransactionFormType,
   TransactionType,
@@ -39,9 +29,9 @@ import { Textarea } from "@/components/ui/textarea";
 export function TransactionForm(props: {
   categoryId: TransactionType["categoryId"];
   transactionType: TransactionType["transactionType"];
+  isOpen: (open: boolean) => void;
 }) {
   const { user } = useUser();
-  const router = useRouter();
   const userId = user?.publicMetadata.dbUserId as string;
   const { categoryId, transactionType: initialTransactionType } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,8 +62,7 @@ export function TransactionForm(props: {
       if (result.success) {
         toast.success("Transaction created successfully!");
         form.reset();
-        await revalidateCategories();
-        router.refresh();
+        props.isOpen(false);
       } else {
         toast.error(
           result.errors?.join(", ") || "Failed to create transaction"
@@ -103,7 +92,13 @@ export function TransactionForm(props: {
                         <Button
                           key={type}
                           type="button"
-                          variant={field.value === type ? "default" : "outline"}
+                          variant={
+                            field.value === type
+                              ? type === "Credit"
+                                ? "default"
+                                : "destructive"
+                              : "outline"
+                          }
                           onClick={() => field.onChange(type)}
                           className="flex-1"
                         >

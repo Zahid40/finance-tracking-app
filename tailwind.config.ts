@@ -13,7 +13,9 @@ const config: Config = {
     container: {
       center: true,
       padding: "2rem",
-      screens: { "2xl": "1440px" },
+      screens: {
+        "2xl": "1440px",
+      },
     },
     extend: {
       fontFamily: {
@@ -33,6 +35,17 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          50: "hsl(138.5 76.5% 96.7%)",
+          100: "hsl(140.6 84.2% 92.5%)",
+          200: "hsl(141 78.9% 85.1%)",
+          300: "hsl(141.7 76.6% 73.1%)",
+          400: "hsl(141.9 69.2% 58%)",
+          500: "hsl(142.1 70.6% 45.3%)",
+          600: "hsl(142.1 76.2% 36.3%)",
+          700: "hsl(142.4 71.8% 29.2%)",
+          800: "hsl(142.8 64.2% 24.1%)",
+          900: "hsl(143.8 61.2% 20.2%)",
+          950: "hsl(144.9 80.4% 10%)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -75,6 +88,28 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

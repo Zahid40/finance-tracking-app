@@ -1,10 +1,7 @@
 "use client";
-
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
 import {
   Form,
   FormControl,
@@ -15,27 +12,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CategoryFormSchema } from "../schema/category.schema";
-import { CategoryFormType, CategoryType } from "../types/category.type";
+import { CategoryFormType } from "../types/category.type";
 import { useUser } from "@clerk/nextjs";
-import {
-  createCategory,
-  revalidateCategories,
-} from "@/features/category/action/category.action";
-import { startTransition } from "react";
-import { useRouter } from "next/navigation";
+import { createCategory } from "@/features/category/action/category.action";
 
-export function CategoryForm() {
+export function CategoryForm(props: { isOpen: (open: boolean) => void }) {
   const { user } = useUser();
-  const router = useRouter();
   const userId = user?.publicMetadata.dbUserId as string;
   const form = useForm<CategoryFormType>({
     resolver: zodResolver(CategoryFormSchema),
@@ -52,6 +37,7 @@ export function CategoryForm() {
     if (result.success) {
       toast.success("Category created successfully!");
       form.reset();
+      props.isOpen(false); // Close the drawer on successful submission
     } else {
       // Display validation errors or other errors returned by the action
       toast.error(result.errors?.join(", ") || "Failed to create category");
@@ -60,12 +46,12 @@ export function CategoryForm() {
 
   return (
     <div className="flex  items-center justify-center  p-4">
-      <Card className="w-full  shadow-lg">
-        <CardContent className="mt-6">
+      <Card className="w-full max-w-3xl  shadow-lg">
+        <CardContent className="mt-4">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-8 max-w-3xl mx-auto py-10"
+              className="space-y-4 "
             >
               <FormField
                 control={form.control}
@@ -112,7 +98,9 @@ export function CategoryForm() {
                 )}
               />
 
-              <Button type="submit">Submit</Button>
+              <Button className="w-full py-8" type="submit">
+                Create Category
+              </Button>
             </form>
           </Form>
         </CardContent>

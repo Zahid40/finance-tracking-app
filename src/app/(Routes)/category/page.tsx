@@ -11,9 +11,17 @@ import {
   DrawerFooter,
   DrawerClose,
 } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { CategoryForm } from "@/features/category/components/CategoryForm";
 import { fetchCategories } from "@/features/category/action/category.action";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
@@ -21,20 +29,30 @@ import CategoryCard from "@/features/category/components/CategoryCard";
 import { TrackChart } from "@/features/transaction/components/TransactionChart";
 import { CategoryType } from "@/features/category/types/category.type";
 import { Plus } from "lucide-react";
-import { TransactionForm } from "@/features/transaction/components/TransactionForm";
 import TransactionButton from "@/features/transaction/components/TransactionButton";
-import { TransactionType, TransactionsChartDataType } from "@/features/transaction/types/transaction.types";
-import { fetchTransactions, fetchTransactionsByDateRange } from "@/features/transaction/action/transaction.action";
+import {
+  TransactionType,
+  TransactionsChartDataType,
+} from "@/features/transaction/types/transaction.types";
+import {
+  fetchTransactionsByDateRange,
+} from "@/features/transaction/action/transaction.action";
 import TransactionCard from "@/features/transaction/components/TransactionCard";
+import CategoryButton from "@/features/category/components/CategoryButton";
+import CategoryMenuButton from "@/features/category/components/CategoryMenuButton";
 
 export default function Component() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
+
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
+    null
+  );
   const [transactions, setTransactions] = useState<TransactionType[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [transactionsLoading, setTransactionsLoading] = useState(false);
-  const [transactionsChartData, setTransactionsChartData] = useState<TransactionsChartDataType[]>([]);
+  const [transactionsChartData, setTransactionsChartData] = useState<
+    TransactionsChartDataType[]
+  >([]);
 
   const { user } = useUser();
   const userId: CategoryType["_id"] = user?.publicMetadata.dbUserId as string;
@@ -49,7 +67,7 @@ export default function Component() {
       } catch (error) {
         console.error("Error loading categories:", error);
         toast.error("Failed to load categories. Please try again.");
-      }finally{
+      } finally {
         setCategoriesLoading(false);
       }
     };
@@ -65,38 +83,36 @@ export default function Component() {
       const endDate = new Date().toISOString();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 7);
-      
+
       // Convert startDate to ISO string
       const startDateISO = startDate.toISOString();
-  
+
       // Fetch transactions within the date range
       const transactionData = await fetchTransactionsByDateRange(
-        userId, 
-        selectedCategory?._id!, 
-        startDateISO, 
+        userId,
+        selectedCategory?._id!,
+        startDateISO,
         endDate
       );
-  
+
       setTransactions(transactionData.transactions);
       console.log(transactionData.chartData);
       setTransactionsChartData(transactionData.chartData);
-      
+
       toast.success("Transactions loaded successfully!");
     } catch (error) {
       console.error("Error loading transactions:", error);
       toast.error("Failed to load transactions. Please try again.");
-    }finally{
+    } finally {
       setTransactionsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     if (selectedCategory) {
       loadTransactions();
     }
   }, [selectedCategory]);
-
-
 
   const chartConfig = {
     amount: {
@@ -113,9 +129,7 @@ export default function Component() {
     <div className="p-4">
       <h1 className="text-3xl font-semibold mb-4">Category Page</h1>
 
-      <Button variant={'secondary'} className="mb-8 w-full" onClick={() => setIsCreateDrawerOpen(true)}>
-       <Plus className="size-4" /> Create Category
-      </Button>
+      <CategoryButton />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {categories.map((category) => (
@@ -127,29 +141,13 @@ export default function Component() {
         ))}
       </div>
 
-      <Drawer open={isCreateDrawerOpen} onOpenChange={setIsCreateDrawerOpen}>
-        <DrawerContent className="max-w-3xl m-auto">
-          <DrawerHeader>
-            <DrawerTitle>Create New Category</DrawerTitle>
-            <DrawerDescription>
-              Fill in the details to create a new category.
-            </DrawerDescription>
-          </DrawerHeader>
-          <CategoryForm />
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-
       <Drawer
         open={!!selectedCategory}
         onOpenChange={() => setSelectedCategory(null)}
       >
         <DrawerContent className="h-[100dvh] max-w-3xl m-auto">
           <DrawerHeader>
+          <CategoryMenuButton categoryId={selectedCategory?._id!} />
             <DrawerTitle>{selectedCategory?.name}</DrawerTitle>
             <DrawerDescription>
               Category details and transactions
@@ -159,32 +157,34 @@ export default function Component() {
                 variant="outline"
                 className="rounded-full size-8 border-2 border-primary p-0"
               >
-                <Plus className="rotate-45 size-4" /> 
+                <Plus className="rotate-45 size-4" />
               </Button>
             </DrawerClose>
+
           </DrawerHeader>
-          
+
           <TrackChart
             chartData={transactionsChartData}
             chartConfig={chartConfig}
-            title={selectedCategory?.name as string}
-            desc={selectedCategory?.name as string}
           />
-          <TransactionButton categoryId={selectedCategory?._id!}  />
-          
+          <TransactionButton categoryId={selectedCategory?._id!} />
+
+          <h2 className="text-lg font-semibold px-4 py-0">Transactions</h2>
           <ScrollArea className="h-full">
             <div className="p-4 space-y-1">
-              <h2 className="text-lg font-semibold">Transactions</h2>
               {transactions.length > 0 ? (
                 transactions.map((transaction) => (
-                  <TransactionCard transaction={transaction} key={transaction._id} />
+                  <TransactionCard
+                    transaction={transaction}
+                    key={transaction._id}
+                  />
                 ))
               ) : (
                 <p>No transactions available for this category.</p>
               )}
             </div>
           </ScrollArea>
-          
+
           <DrawerFooter></DrawerFooter>
         </DrawerContent>
       </Drawer>
