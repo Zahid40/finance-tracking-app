@@ -18,13 +18,13 @@ import { fetchCategories } from "@/features/category/action/category.action";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import CategoryCard from "@/features/category/components/CategoryCard";
-import { TrackChart } from "@/features/category/components/TrackChart";
+import { TrackChart } from "@/features/transaction/components/TransactionChart";
 import { CategoryType } from "@/features/category/types/category.type";
 import { Plus } from "lucide-react";
 import { TransactionForm } from "@/features/transaction/components/TransactionForm";
 import TransactionButton from "@/features/transaction/components/TransactionButton";
-import { TransactionType } from "@/features/transaction/types/transaction.types";
-import { fetchTransactions } from "@/features/transaction/action/transaction.action";
+import { TransactionType, TransactionsChartDataType } from "@/features/transaction/types/transaction.types";
+import { fetchTransactions, fetchTransactionsByDateRange } from "@/features/transaction/action/transaction.action";
 import TransactionCard from "@/features/transaction/components/TransactionCard";
 
 export default function Component() {
@@ -32,6 +32,9 @@ export default function Component() {
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
   const [transactions, setTransactions] = useState<TransactionType[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
+  const [transactionsChartData, setTransactionsChartData] = useState<TransactionsChartDataType[]>([]);
 
   const { user } = useUser();
   const userId: CategoryType["_id"] = user?.publicMetadata.dbUserId as string;
@@ -39,12 +42,15 @@ export default function Component() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
+        setCategoriesLoading(true);
         const categoryData = await fetchCategories(userId);
         setCategories(categoryData);
         toast.success("Categories loaded successfully!");
       } catch (error) {
         console.error("Error loading categories:", error);
         toast.error("Failed to load categories. Please try again.");
+      }finally{
+        setCategoriesLoading(false);
       }
     };
 
@@ -54,14 +60,36 @@ export default function Component() {
   // Load transactions whenever a category is selected
   const loadTransactions = async () => {
     try {
-      const transactionData = await fetchTransactions(userId, selectedCategory?._id!);
-      setTransactions(transactionData);
+      setTransactionsLoading(true);
+      // Define endDate as today and startDate as one week ago
+      const endDate = new Date().toISOString();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      
+      // Convert startDate to ISO string
+      const startDateISO = startDate.toISOString();
+  
+      // Fetch transactions within the date range
+      const transactionData = await fetchTransactionsByDateRange(
+        userId, 
+        selectedCategory?._id!, 
+        startDateISO, 
+        endDate
+      );
+  
+      setTransactions(transactionData.transactions);
+      console.log(transactionData.chartData);
+      setTransactionsChartData(transactionData.chartData);
+      
       toast.success("Transactions loaded successfully!");
     } catch (error) {
       console.error("Error loading transactions:", error);
       toast.error("Failed to load transactions. Please try again.");
+    }finally{
+      setTransactionsLoading(false);
     }
   };
+  
   useEffect(() => {
     if (selectedCategory) {
       loadTransactions();
@@ -69,19 +97,15 @@ export default function Component() {
   }, [selectedCategory]);
 
 
-  const chartData = [
-    { month: "January", desktop: 200 },
-    { month: "February", desktop: 250 },
-    { month: "March", desktop: 300 },
-    { month: "April", desktop: 280 },
-    { month: "May", desktop: 320 },
-    { month: "June", desktop: 350 },
-  ];
 
   const chartConfig = {
-    desktop: {
-      label: "Expenses",
-      color: "hsl(var(--chart-1))",
+    amount: {
+      label: "Balance",
+      color: "hsl(var(--chart-5))",
+    },
+    transactionAmount: {
+      label: "Last transaction",
+      color: "hsl(var(--chart-5))",
     },
   };
 
@@ -141,7 +165,7 @@ export default function Component() {
           </DrawerHeader>
           
           <TrackChart
-            chartData={chartData}
+            chartData={transactionsChartData}
             chartConfig={chartConfig}
             title={selectedCategory?.name as string}
             desc={selectedCategory?.name as string}

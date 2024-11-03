@@ -23,7 +23,7 @@ export default function CategoryCard(props: CategoryCardProps) {
 
   return (
     <div
-      className="shadow-lg cursor-pointer light:bg-green-600 dark:bg-green-500 p-6 rounded-sm border-2 border-green-300"
+      className="shadow-lg cursor-pointer  p-6 rounded-sm border-2 hover:bg-primary/30 transition-all duration-300 ease-in-out"
       onClick={() => onClick(category)} // Use the passed onClick prop
     >
       <div>

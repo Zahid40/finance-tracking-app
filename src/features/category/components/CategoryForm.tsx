@@ -26,37 +26,32 @@ import { Input } from "@/components/ui/input";
 import { CategoryFormSchema } from "../schema/category.schema";
 import { CategoryFormType, CategoryType } from "../types/category.type";
 import { useUser } from "@clerk/nextjs";
-import { createCategory, revalidateCategories } from "@/features/category/action/category.action";
+import {
+  createCategory,
+  revalidateCategories,
+} from "@/features/category/action/category.action";
 import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export function CategoryForm() {
   const { user } = useUser();
   const router = useRouter();
-  const userId = user?.publicMetadata.dbUserId as string
+  const userId = user?.publicMetadata.dbUserId as string;
   const form = useForm<CategoryFormType>({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       name: "",
-      current_balance: undefined,
+      current_balance: 0,
     },
   });
 
   async function onSubmit(data: CategoryFormType) {
-
     // Call server action directly
-    const result = await createCategory(data , userId );
+    const result = await createCategory(data, userId);
 
     if (result.success) {
       toast.success("Category created successfully!");
       form.reset();
-      await revalidateCategories();
-
-      // Trigger a React re-render to reflect updated data
-      
-        router.refresh(); // Requires `useRouter` from 'next/navigation'
-    
-    
     } else {
       // Display validation errors or other errors returned by the action
       toast.error(result.errors?.join(", ") || "Failed to create category");
@@ -64,14 +59,8 @@ export function CategoryForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-green-50 p-4">
-      <Card className="w-full max-w-md bg-white shadow-lg">
-        <CardHeader className="bg-green-600 text-white">
-          <CardTitle className="text-2xl">Create Category</CardTitle>
-          <CardDescription className="text-green-100">
-            Fill out the form below to create a new category.
-          </CardDescription>
-        </CardHeader>
+    <div className="flex  items-center justify-center  p-4">
+      <Card className="w-full  shadow-lg">
         <CardContent className="mt-6">
           <Form {...form}>
             <form

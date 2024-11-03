@@ -8,6 +8,7 @@ import { TransactionSchema } from "../schema/transaction.schema";
 import { connect } from "@/lib/db"; // Ensure this connects to your MongoDB instance
 import {
   TransactionType,
+  TransactionsChartDataType,
 } from "../types/transaction.types";
 import { cache } from "react";
 import { revalidateTag } from "next/cache";
@@ -40,6 +41,65 @@ export const revalidateTransactions = async () => {
   await revalidateTag("transactions");
 };
 
+export const fetchTransactionsByDateRange = cache(
+  async (userId: string, categoryId: string, startDate: string, endDate: string): Promise<{ transactions: TransactionType[]; chartData: TransactionsChartDataType[] }> => {
+    // Connect to the database
+    await connect();
+
+    // Fetch the transactions by userId, categoryId, and date range, sorted by `updatedAt`
+    const transactions = await Transaction.find({
+      userId,
+      categoryId,
+      updatedAt: { $gte: startDate, $lte: endDate },
+    })
+      .sort({ updatedAt: -1 }) // Sort in descending order by date
+      .lean();
+
+    // Fetch the category's current balance
+    const category = await Category.findById(categoryId);
+    if (!category) throw new Error("Category not found");
+
+    // Initialize cumulative balance with the category's current balance
+    let cumulativeBalance = category.current_balance;
+
+    // Create chartData array by iterating over transactions in reverse order
+    const chartData: TransactionsChartDataType[] = transactions.map((transaction) => {
+      const { updatedAt, transactionAmount, transactionType } = transaction;
+
+      // Generate a chart data point for this transaction
+      const dataPoint: TransactionsChartDataType = {
+        date: new Date(updatedAt).toISOString(),
+        amount: cumulativeBalance,
+        transactionAmount: transactionType === "Debit" ? -transactionAmount : transactionAmount,
+        transactionType,
+      };
+
+      // Adjust cumulative balance for the next iteration
+      cumulativeBalance += transactionType === "Credit" ? -transactionAmount : transactionAmount;
+
+      return dataPoint;
+    });
+
+
+    // Reverse chartData to chronological order
+    return {
+      transactions: transactions.map((transaction) => ({
+        ...transaction,
+        _id: transaction._id?.toString(),
+        userId: transaction.userId.toString(),
+        categoryId: transaction.categoryId.toString(),
+        name:transaction.name,
+        transactionAmount: transaction.transactionAmount,
+         transactionType:transaction.transactionType,
+        createdAt: transaction.createdAt.toISOString(),
+        updatedAt: transaction.updatedAt.toISOString(),
+      })),
+      chartData: chartData.reverse(), // Chronological order
+    };
+  }
+);
+
+
 export const createTransaction = async (data: TransactionType) => {
   try {
     await connect();
@@ -63,6 +123,7 @@ export const createTransaction = async (data: TransactionType) => {
         return { success: false, errors: ["Insufficient balance for debit transaction."] };
       }
     }
+    category.updatedAt = new Date();
 
     // Save the updated category balance
     await category.save();

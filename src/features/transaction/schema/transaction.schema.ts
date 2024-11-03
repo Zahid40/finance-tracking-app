@@ -44,3 +44,11 @@ export const TransactionFormSchema = TransactionSchema.pick({
 });
 
 export const TransactionUpdateSchema = TransactionSchema.partial();
+
+//Transaction ChartDate
+export const TransactionsChartDataSchema = z.object({
+  date: TransactionSchema.shape.createdAt, 
+  amount: TransactionSchema.shape.transactionAmount, 
+  transactionAmount: TransactionSchema.shape.transactionAmount, 
+  transactionType: TransactionSchema.shape.transactionType, 
+});
