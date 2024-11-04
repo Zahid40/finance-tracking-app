@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { SignInButton } from "@/features/auth/components/AuthButtons";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@radix-ui/react-accordion";
 import { DollarSign, PieChart, Target, TrendingUp, Smartphone, BarChart, Zap, Users, Lock } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <main className="container mx-auto px-4">
         {/* Hero Section */}
         <section className="text-center py-20">
-          <h1 className="text-5xl font-bold mb-6">Take Control of Your Finances – Track Every Penny with Ease</h1>
-          <p className="text-xl text-gray-600 mb-8">Manually add and track your expenses to get a clear overview of your spending habits.</p>
+          <h1 className="text-6xl font-bold mb-6">Take Control of Your Finances – Track Every Penny with Ease</h1>
+          <p className="text-base text-gray-600 mb-8">Manually add and track your expenses to get a clear overview of your spending habits.</p>
           <Button size="lg" className="bg-primary-500 hover:bg-primary-400 text-white">
             Get Started for Free
           </Button>
@@ -124,38 +127,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* User Testimonials */}
-        <section id="testimonials" className="py-20 ">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { name: "Alex Johnson", quote: "FinZ helped me save for my first home without compromising my privacy. The 30-day data policy gives me peace of mind.", avatar: "/placeholder.svg?height=60&width=60" },
-              { name: "Sarah Lee", quote: "I love how I can track my spending without worrying about my data being stored forever. It's the perfect balance of functionality and privacy.", avatar: "/placeholder.svg?height=60&width=60" },
-              { name: "Mike Brown", quote: "As someone who values financial privacy, FinZ is a game-changer. I can budget effectively without feeling like my data is being mined.", avatar: "/placeholder.svg?height=60&width=60" },
-            ].map((testimonial, index) => (
-              <Card key={index}>
-                <CardContent className="pt-6">
-                  <div className="flex items-center mb-4">
-                    <img src={testimonial.avatar} alt={testimonial.name} className="w-12 h-12 rounded-full mr-4" />
-                    <div>
-                      <h3 className="font-semibold">{testimonial.name}</h3>
-                    </div>
-                  </div>
-                  <p className="text-gray-600">{testimonial.quote}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+
 
         {/* Try It Yourself Section */}
         <section className="py-20">
           <h2 className="text-3xl font-bold text-center mb-12">Experience FinZ Now</h2>
           
           <div className="text-center mt-8">
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
-              Sign Up and Start Tracking
-            </Button>
+            <SignInButton/>
           </div>
         </section>
 

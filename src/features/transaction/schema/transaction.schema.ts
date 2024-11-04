@@ -5,7 +5,7 @@ import { z } from "zod";
 const objectIdRegex = /^[a-f\d]{24}$/i;
 
 export const TransactionSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.string().regex(objectIdRegex, "Invalid ID format").optional(),
   categoryId: z
     .string()
     .min(1, "Category ID is required")
