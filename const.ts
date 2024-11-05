@@ -71,17 +71,10 @@ export const navLinks = {
       title: "Category",
       link: "/category",
     },
+    
   },
 };
 export const NavLinks = [
-  {
-    name: "Home",
-    link: "/",
-    icon: Home,
-  },
-  {
-    name: "Category",
-    link: "/category",
-    icon: Home,
-  },
+  navLinks,
+  navLinks.root.category,
 ];

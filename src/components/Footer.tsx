@@ -1,14 +1,15 @@
 import React from 'react'
+import { Logo } from './Navbar'
+import { Separator } from './ui/separator';
+import { AppName } from '../../const';
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear(); // returns only the year, e.g., 2024
   return (
-    <footer className="bg-gray-800 text-white py-12">
+    <footer className="bg-primary-900 text-white rounded-t-xl py-6 sticky ">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">FinZ</h3>
-              <p className="text-gray-400">Empowering you to take control of your finances with privacy at the forefront.</p>
-            </div>
+            <Logo/>
             <div>
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
@@ -49,8 +50,9 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="mt-8 border-t border-gray-700 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 FinZ. All rights reserved.</p>
+          <div className="pt-4  text-center text-white">
+            <Separator className='mb-4 bg-primary-800'/>
+            <span className='text-sm'>&copy; {currentYear} {AppName}. All rights reserved.</span>
           </div>
         </div>
       </footer>

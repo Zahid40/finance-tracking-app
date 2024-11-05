@@ -8,12 +8,7 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps {
   variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
+  "link" | "default" | "ghost" | "destructive" | "outline" | "secondary" | "expandIcon" | "ringHover" | "shine" | "gooeyRight" | "gooeyLeft" | "linkHover1" | "linkHover2" | null | undefined;
   size?: "default"  | "sm" | "lg" | "icon";
   icon?: boolean; // Icon prop
   className?: string;
