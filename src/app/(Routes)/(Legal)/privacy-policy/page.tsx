@@ -46,7 +46,7 @@ export default function Component() {
                     Data Security
                   </h2>
                   <p className=" leading-relaxed">
-                    While we ensure a high standard of security within the app, we advise users to avoid entering sensitive or personally identifiable information (PII). Since we don't store data beyond 30 days, we have minimized risks related to data breaches.
+                    While we ensure a high standard of security within the app, we advise users to avoid entering sensitive or personally identifiable information (PII). Since we don&apos;t store data beyond 30 days, we have minimized risks related to data breaches.
                   </p>
                   
                 </section>
@@ -57,7 +57,7 @@ export default function Component() {
                     Third-Party Services
                   </h2>
                   <p className=" leading-relaxed">
-                    Fintraz doesn't integrate any third-party services that would have access to your data. The app is designed to operate independently without sharing your information.
+                    Fintraz doesn&apos;t integrate any third-party services that would have access to your data. The app is designed to operate independently without sharing your information.
                   </p>
                   
                 </section>
@@ -68,7 +68,7 @@ export default function Component() {
                     Changes to the Privacy Policy
                   </h2>
                   <p className=" leading-relaxed">
-                    We may occasionally update our Privacy Policy. You'll be notified of significant changes in the app, and continued usage implies acceptance of any revised terms.
+                    We may occasionally update our Privacy Policy. You&apos;ll be notified of significant changes in the app, and continued usage implies acceptance of any revised terms.
                   </p>
                   
                 </section>
