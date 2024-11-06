@@ -4,7 +4,7 @@ import { SignInButton } from "@/features/auth/components/AuthButtons";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@radix-ui/react-accordion";
 import { DollarSign, PieChart, Target, TrendingUp, Smartphone, BarChart, Zap, Users, Lock } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
 
 export default function Home() {
   return (

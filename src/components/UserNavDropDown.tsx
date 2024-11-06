@@ -21,7 +21,7 @@ import {
   LogOut,
 } from "lucide-react";
 import {  SignOutButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
 import { SignInButton, SignUpButton } from "@/features/auth/components/AuthButtons";
 
 export default function UserNavDropdown() {

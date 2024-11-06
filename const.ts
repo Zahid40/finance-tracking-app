@@ -61,20 +61,61 @@ export const AppKeyword = [
   "financial success",
 ];
 
+export const AppAuthors = [{ name: "Zahid", url: "https://nextjs.org" }];
+export const AppCreator = "Zahid";
+export const AppPublisher = "Zahid";
+
+//Social Information
+export const AppEmail = "zahiddevz@gmail.com";
+export const AppPhone = "+91 9625162488";
+export const AppAddress = "Delhi , India";
+export const AppWhatsapp = `https://wa.me/${AppPhone}`;
+export const AppInstagramUsername = "zahid.devz";
+export const AppInstagram = `https://www.instagram.com/${AppInstagramUsername}`;
+export const AppGithubUsername = "Zahid40";
+export const AppGithub = `https://github.com/${AppGithubUsername}`;
+export const AppFacebookUsername = "Zahid-Ansari";
+export const AppFacebook = `https://www.facebook.com/people/${AppFacebookUsername}`;
+export const AppLinkdinUsername = "zahid-ansari-53354926a";
+export const AppLinkdin = `https://www.linkedin.com/in/${AppLinkdinUsername}`;
+export const AppTwitterUsername = "its_zahid83";
+export const AppTwitter = `https://x.com/${AppTwitterUsername}`;
+export const AppDribbbleUsername = "zahid83";
+export const AppDribbble = `https://dribbble.com/${AppDribbbleUsername}`;
+export const AppFigmaUsername = "@zahid8";
+export const AppFigma = `https://www.figma.com/${AppFigmaUsername}`;
+export const AppBehanceUsername = "zahidanasari";
+export const AppBehance = `https://www.behance.net/${AppBehanceUsername}`;
+export const AppBuyMeACoffeeUsername = "zahid40";
+export const AppBuyMeACoffee = `https://buymeacoffee.com/${AppBuyMeACoffeeUsername}`;
+
 //Nav Data
 export const navLinks = {
   title: "Home",
   link: "/",
   icon: Home,
   root: {
+    about: {
+      title: "About",
+      link: "/about",
+    },
     category: {
       title: "Category",
       link: "/category",
     },
-    
+    terms: {
+      title: "Terms and Condition",
+      link: "/terms",
+    },
+    privacyPolicy: {
+      title: "Privacy Policy",
+      link: "/privacy-policy",
+    },
   },
 };
-export const NavLinks = [
-  navLinks,
-  navLinks.root.category,
-];
+export const NavLinks = [navLinks, navLinks.root.category];
+
+export const FooterLinks = {
+  Legal: [navLinks.root.terms, navLinks.root.privacyPolicy],
+  "Quick Links": [navLinks, navLinks.root.about, navLinks.root.category],
+};

@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
 import React from "react";
 import { LogIn, UserPlus, LogOut, LayoutDashboard } from "lucide-react"; // Importing icons
 import { useClerk } from "@clerk/nextjs";
