@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -15,20 +15,18 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { fetchCategories } from "@/features/category/action/category.action";
-import { useUser } from "@clerk/nextjs";
+import { useSession, useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import CategoryCard from "@/features/category/components/CategoryCard";
 import { TrackChart } from "@/features/transaction/components/TransactionChart";
 import { CategoryType } from "@/features/category/types/category.type";
-import { Plus } from "lucide-react";
+import { Loader2, Plus, RefreshCcw } from "lucide-react";
 import TransactionButton from "@/features/transaction/components/TransactionButton";
 import {
   TransactionType,
   TransactionsChartDataType,
 } from "@/features/transaction/types/transaction.types";
-import {
-  fetchTransactionsByDateRange,
-} from "@/features/transaction/action/transaction.action";
+import { fetchTransactionsByDateRange } from "@/features/transaction/action/transaction.action";
 import TransactionCard from "@/features/transaction/components/TransactionCard";
 import CategoryButton from "@/features/category/components/CategoryButton";
 import CategoryMenuButton from "@/features/category/components/CategoryMenuButton";
@@ -47,38 +45,44 @@ export default function Component() {
   >([]);
 
   const { user } = useUser();
+  
   const userId: CategoryType["_id"] = user?.publicMetadata.dbUserId as string;
 
-  useEffect(() => {
-    const loadCategories = async () => {
+  const loadCategories = useCallback(
+    async (refresh: boolean = false) => {
       try {
         setCategoriesLoading(true);
         const categoryData = await fetchCategories(userId);
         setCategories(categoryData);
-        toast.success("Categories loaded successfully!");
+        refresh
+          ? toast.success("Showing Latest Categories")
+          : toast.success("Categories loaded successfully!");
       } catch (error) {
         console.error("Error loading categories:", error);
         toast.error("Failed to load categories. Please try again.");
       } finally {
         setCategoriesLoading(false);
       }
-    };
+    },
+    [userId]
+  );
 
+  useEffect(() => {
     loadCategories();
-  }, [userId]);
+  }, [loadCategories]);
 
-  // Load transactions whenever a category is selected
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     try {
       setTransactionsLoading(true);
+      
       // Define endDate as today and startDate as one week ago
       const endDate = new Date().toISOString();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 7);
-
+      
       // Convert startDate to ISO string
       const startDateISO = startDate.toISOString();
-
+  
       // Fetch transactions within the date range
       const transactionData = await fetchTransactionsByDateRange(
         userId,
@@ -86,11 +90,11 @@ export default function Component() {
         startDateISO,
         endDate
       );
-
+  
       setTransactions(transactionData.transactions);
       console.log(transactionData.chartData);
       setTransactionsChartData(transactionData.chartData);
-
+  
       toast.success("Transactions loaded successfully!");
     } catch (error) {
       console.error("Error loading transactions:", error);
@@ -98,13 +102,14 @@ export default function Component() {
     } finally {
       setTransactionsLoading(false);
     }
-  };
-
+  }, [userId, selectedCategory]);
+  
   useEffect(() => {
     if (selectedCategory) {
       loadTransactions();
     }
-  }, [selectedCategory]);
+  }, [loadTransactions]);
+  
 
   const chartConfig = {
     amount: {
@@ -120,8 +125,27 @@ export default function Component() {
   return (
     <div className="p-4">
       <h1 className="text-3xl font-semibold mb-4">Category Page</h1>
-
-      <CategoryButton />
+      <div className="flex gap-2">
+        <CategoryButton />
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            loadCategories(true);
+          }}
+        >
+          {categoriesLoading ? (
+            <>
+              Refreshing.... &nbsp;&nbsp;
+              <Loader2 className="animate-spin" />
+            </>
+          ) : (
+            <>
+              Refresh &nbsp;&nbsp;
+              <RefreshCcw />
+            </>
+          )}
+        </Button>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {categories.map((category) => (
@@ -139,7 +163,7 @@ export default function Component() {
       >
         <DrawerContent className="h-[100dvh] max-w-3xl m-auto">
           <DrawerHeader>
-          <CategoryMenuButton categoryId={selectedCategory?._id!} />
+            <CategoryMenuButton categoryId={selectedCategory?._id!} />
             <DrawerTitle>{selectedCategory?.name}</DrawerTitle>
             <DrawerDescription>
               Category details and transactions
@@ -152,7 +176,6 @@ export default function Component() {
                 <Plus className="rotate-45 size-4" />
               </Button>
             </DrawerClose>
-
           </DrawerHeader>
 
           <TrackChart

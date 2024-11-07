@@ -1,4 +1,4 @@
-import { Home } from "lucide-react";
+import { Building, Home, Layers3 } from "lucide-react";
 
 //App Info
 export const AppName = "Fintraz";
@@ -98,10 +98,12 @@ export const navLinks = {
     about: {
       title: "About",
       link: "/about",
+      icon : Building
     },
     category: {
       title: "Category",
       link: "/category",
+      icon : Layers3
     },
     terms: {
       title: "Terms and Condition",
@@ -113,7 +115,7 @@ export const navLinks = {
     },
   },
 };
-export const NavLinks = [navLinks, navLinks.root.category];
+export const NavLinks = [navLinks, navLinks.root.category , navLinks.root.about];
 
 export const FooterLinks = {
   Legal: [navLinks.root.terms, navLinks.root.privacyPolicy],
