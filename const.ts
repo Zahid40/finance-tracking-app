@@ -1,4 +1,4 @@
-import { Building, Home, Layers3 } from "lucide-react";
+import { Building, Home, Layers3, Settings, User } from "lucide-react";
 
 //App Info
 export const AppName = "Fintraz";
@@ -65,6 +65,10 @@ export const AppAuthors = [{ name: "Zahid", url: "https://nextjs.org" }];
 export const AppCreator = "Zahid";
 export const AppPublisher = "Zahid";
 
+export const AppDeveloper ={
+  name :'Zahid' , website:'https://zahid.vercel.app' , role :'FrontEnd Developer'
+}
+
 //Social Information
 export const AppEmail = "zahiddevz@gmail.com";
 export const AppPhone = "+91 9625162488";
@@ -89,21 +93,36 @@ export const AppBehance = `https://www.behance.net/${AppBehanceUsername}`;
 export const AppBuyMeACoffeeUsername = "zahid40";
 export const AppBuyMeACoffee = `https://buymeacoffee.com/${AppBuyMeACoffeeUsername}`;
 
+
+export const AppGithubRepoName = 'finance-tracking-app'
+export const GithubRepoLink = `${AppGithub}/${AppGithubRepoName}`
+export const GithubApiRepoLink = `https://api.github.com/repos/${AppGithubUsername}/${AppGithubRepoName}`
+
 //Nav Data
 export const navLinks = {
   title: "Home",
   link: "/",
   icon: Home,
   root: {
+    profile: {
+      title: "Profile",
+      link: "/profile",
+      icon: User,
+    },
+    settings:{
+      title:"Settings" ,
+      link:"/settings",
+      icon : Settings
+    },
     about: {
       title: "About",
       link: "/about",
-      icon : Building
+      icon: Building,
     },
     category: {
       title: "Category",
       link: "/category",
-      icon : Layers3
+      icon: Layers3,
     },
     terms: {
       title: "Terms and Condition",
@@ -115,7 +134,8 @@ export const navLinks = {
     },
   },
 };
-export const NavLinks = [navLinks, navLinks.root.category , navLinks.root.about];
+export const NavLinks = [navLinks, navLinks.root.category, navLinks.root.about];
+export const userNavLinks = [navLinks.root.profile , navLinks.root.settings];
 
 export const FooterLinks = {
   Legal: [navLinks.root.terms, navLinks.root.privacyPolicy],

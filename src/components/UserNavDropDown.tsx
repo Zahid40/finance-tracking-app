@@ -20,23 +20,29 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import {  SignOutButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
-import { Link } from 'next-view-transitions'
-import { SignInButton, SignUpButton } from "@/features/auth/components/AuthButtons";
+import { SignOutButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { Link } from "next-view-transitions";
+import {
+  SignInButton,
+  SignUpButton,
+} from "@/features/auth/components/AuthButtons";
+import { userNavLinks } from "../../const";
 
 export default function UserNavDropdown() {
- const {user} = useUser();
+  const { user } = useUser();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <SignedOut>
-            <AvatarImage src="https://avatar.iran.liara.run/public" alt="User avatar" />
-
+              <AvatarImage
+                src="https://avatar.iran.liara.run/public"
+                alt="User avatar"
+              />
             </SignedOut>
             <SignedIn>
-            <AvatarImage src={user?.imageUrl} alt="User avatar" />
+              <AvatarImage src={user?.imageUrl} alt="User avatar" />
             </SignedIn>
             {/* <AvatarImage src="https://placehold.co/32x32/white/green?text=U" alt="User avatar" /> */}
             <AvatarFallback>U</AvatarFallback>
@@ -44,12 +50,13 @@ export default function UserNavDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
-      <SignedIn>
-
+        <SignedIn>
           <>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.fullName}</p>
+                <p className="text-sm font-medium leading-none">
+                  {user?.fullName}
+                </p>
                 <p className="text-xs leading-none text-muted-foreground">
                   {user?.emailAddresses[0].emailAddress}
                 </p>
@@ -57,45 +64,51 @@ export default function UserNavDropdown() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
+              {userNavLinks.map((e) => (
+                <DropdownMenuItem asChild>
+                  <Link href={e.link}>
+                    <e.icon className="mr-2 h-4 w-4" />
+                    <span>{e.title}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem >
+            <DropdownMenuItem>
               <LogOut className="mr-2 h-4 w-4" />
               <SignOutButton>
-            <div className=" flex gap-1 text-red-500 font-normal hover:font-semibold">
-              
-              <p className="text-red-500 font-normal hover:font-semibold">
-                Log out
-              </p>
-            </div>
-          </SignOutButton>
+                <div className=" flex gap-1 text-red-500 font-normal hover:font-semibold">
+                  <p className="text-red-500 font-normal hover:font-semibold">
+                    Log out
+                  </p>
+                </div>
+              </SignOutButton>
             </DropdownMenuItem>
           </>
-      </SignedIn>
+        </SignedIn>
         <SignedOut>
-
           <>
-            <DropdownMenuItem >
-              <SignInButton variant="ghost" icon className="w-full justify-start" />
+            <DropdownMenuItem>
+              <SignInButton
+                variant="ghost"
+                icon
+                className="w-full justify-start"
+              />
             </DropdownMenuItem>
             <DropdownMenuItem>
-            <SignUpButton variant="ghost" icon className="w-full justify-start" />
+              <SignUpButton
+                variant="ghost"
+                icon
+                className="w-full justify-start"
+              />
             </DropdownMenuItem>
           </>
         </SignedOut>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <HelpCircle className="mr-2 h-4 w-4" />
           <span>Help</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
