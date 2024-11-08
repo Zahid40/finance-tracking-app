@@ -65,7 +65,7 @@ export default function UserNavDropdown() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               {userNavLinks.map((e) => (
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild key={e.title}>
                   <Link href={e.link}>
                     <e.icon className="mr-2 h-4 w-4" />
                     <span>{e.title}</span>
