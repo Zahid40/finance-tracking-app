@@ -75,7 +75,7 @@ function HeroPill() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease }}
-      className="flex items-center"
+      className={"flex items-center"}
     >
       <div className="space-y-1">
         <p className="text-center text-xs text-muted-foreground">
