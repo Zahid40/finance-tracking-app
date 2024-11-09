@@ -2,6 +2,7 @@ import { Building, Home, Layers3, Settings, User } from "lucide-react";
 
 //App Info
 export const AppName = "Fintraz";
+export const AppUrl = 'https://fintraz.vercel.app'
 export const AppLogo = "/icon/logo-round.svg";
 export const AppTitle = `${AppName} - Smart Finance Tracker for Budgeting & Expenses`;
 export const AppDescriptionShort =
