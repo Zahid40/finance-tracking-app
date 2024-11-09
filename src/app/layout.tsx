@@ -24,10 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-    
-        >
-        <ViewTransitions>
+    <ClerkProvider dynamic>
+      <ViewTransitions>
         <html lang="en" suppressHydrationWarning>
           <body className={`${urbanist.className} antialiased`}>
             <ThemeProvider>
@@ -36,7 +34,7 @@ export default function RootLayout({
             </ThemeProvider>
           </body>
         </html>
-    </ViewTransitions>
-      </ClerkProvider>
+      </ViewTransitions>
+    </ClerkProvider>
   );
 }
