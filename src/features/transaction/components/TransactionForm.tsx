@@ -30,6 +30,7 @@ export function TransactionForm(props: {
   categoryId: TransactionType["categoryId"];
   transactionType: TransactionType["transactionType"];
   isOpen: (open: boolean) => void;
+  transactionRefresh: (refresh?: boolean) => Promise<void>;
 }) {
   const { user } = useUser();
   const userId = user?.publicMetadata.dbUserId as string;
@@ -63,6 +64,7 @@ export function TransactionForm(props: {
         toast.success("Transaction created successfully!");
         form.reset();
         props.isOpen(false);
+        props.transactionRefresh(true);
       } else {
         toast.error(
           result.errors?.join(", ") || "Failed to create transaction"

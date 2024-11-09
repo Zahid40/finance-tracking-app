@@ -67,7 +67,7 @@ export const AppCreator = "Zahid";
 export const AppPublisher = "Zahid";
 
 export const AppDeveloper ={
-  name :'Zahid' , website:'https://zahid.vercel.app' , role :'FrontEnd Developer'
+  name :'Zahid' , website:'https://zahid.vercel.app' , role :'Developer'
 }
 
 //Social Information

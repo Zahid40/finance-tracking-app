@@ -19,7 +19,7 @@ import { CategoryFormType } from "../types/category.type";
 import { useUser } from "@clerk/nextjs";
 import { createCategory } from "@/features/category/action/category.action";
 
-export function CategoryForm(props: { isOpen: (open: boolean) => void }) {
+export function CategoryForm(props: { isOpen: (open: boolean) => void , categoryRefresh: (refresh: boolean) => void }) {
   const { user } = useUser();
   const userId = user?.publicMetadata.dbUserId as string;
   const form = useForm<CategoryFormType>({
@@ -38,6 +38,7 @@ export function CategoryForm(props: { isOpen: (open: boolean) => void }) {
       toast.success("Category created successfully!");
       form.reset();
       props.isOpen(false); // Close the drawer on successful submission
+      props.categoryRefresh(true);
     } else {
       // Display validation errors or other errors returned by the action
       toast.error(result.errors?.join(", ") || "Failed to create category");

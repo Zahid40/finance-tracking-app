@@ -30,6 +30,8 @@ import { fetchTransactionsByDateRange } from "@/features/transaction/action/tran
 import TransactionCard from "@/features/transaction/components/TransactionCard";
 import CategoryButton from "@/features/category/components/CategoryButton";
 import CategoryMenuButton from "@/features/category/components/CategoryMenuButton";
+import { AppLogo } from "../../../../const";
+import Loader from "@/components/Loader";
 
 export default function Component() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -45,7 +47,7 @@ export default function Component() {
   >([]);
 
   const { user } = useUser();
-  
+
   const userId: CategoryType["_id"] = user?.publicMetadata.dbUserId as string;
 
   const loadCategories = useCallback(
@@ -71,45 +73,48 @@ export default function Component() {
     loadCategories();
   }, [loadCategories]);
 
-  const loadTransactions = useCallback(async () => {
-    try {
-      setTransactionsLoading(true);
-      
-      // Define endDate as today and startDate as one week ago
-      const endDate = new Date().toISOString();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 7);
-      
-      // Convert startDate to ISO string
-      const startDateISO = startDate.toISOString();
-  
-      // Fetch transactions within the date range
-      const transactionData = await fetchTransactionsByDateRange(
-        userId,
-        selectedCategory?._id!,
-        startDateISO,
-        endDate
-      );
-  
-      setTransactions(transactionData.transactions);
-      console.log(transactionData.chartData);
-      setTransactionsChartData(transactionData.chartData);
-  
-      toast.success("Transactions loaded successfully!");
-    } catch (error) {
-      console.error("Error loading transactions:", error);
-      toast.error("Failed to load transactions. Please try again.");
-    } finally {
-      setTransactionsLoading(false);
-    }
-  }, [userId, selectedCategory]);
-  
+  const loadTransactions = useCallback(
+    async (refresh: boolean = false) => {
+      try {
+        setTransactionsLoading(true);
+
+        // Define endDate as today and startDate as one week ago
+        const endDate = new Date().toISOString();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+
+        // Convert startDate to ISO string
+        const startDateISO = startDate.toISOString();
+
+        // Fetch transactions within the date range
+        const transactionData = await fetchTransactionsByDateRange(
+          userId,
+          selectedCategory?._id!,
+          startDateISO,
+          endDate
+        );
+
+        setTransactions(transactionData.transactions);
+        setTransactionsChartData(transactionData.chartData);
+
+        refresh
+          ? toast.success("Showing Latest Transactions")
+          : toast.success("Transactions loaded successfully!");
+      } catch (error) {
+        console.error("Error loading transactions:", error);
+        toast.error("Failed to load transactions. Please try again.");
+      } finally {
+        setTransactionsLoading(false);
+      }
+    },
+    [userId, selectedCategory]
+  );
+
   useEffect(() => {
     if (selectedCategory) {
       loadTransactions();
     }
   }, [loadTransactions]);
-  
 
   const chartConfig = {
     amount: {
@@ -123,10 +128,11 @@ export default function Component() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-semibold mb-4">Category Page</h1>
+    <div className="p-4 space-y-2 h-full w-full">
+      <h1 className="text-xl font-medium  ">Category Page</h1>
+      <p className="mb-4">Create your custom categories </p>
       <div className="flex gap-2">
-        <CategoryButton />
+        <CategoryButton categoryRefresh={loadCategories} />
         <Button
           onClick={(e) => {
             e.preventDefault();
@@ -147,15 +153,19 @@ export default function Component() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {categories.map((category) => (
-          <CategoryCard
-            key={category._id}
-            category={category}
-            onClick={() => setSelectedCategory(category)}
-          />
-        ))}
-      </div>
+      {categoriesLoading ? (
+        <Loader />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {categories.map((category) => (
+            <CategoryCard
+              key={category._id}
+              category={category}
+              onClick={() => setSelectedCategory(category)}
+            />
+          ))}
+        </div>
+      )}
 
       <Drawer
         open={!!selectedCategory}
@@ -177,27 +187,52 @@ export default function Component() {
               </Button>
             </DrawerClose>
           </DrawerHeader>
-
-          <TrackChart
-            chartData={transactionsChartData}
-            chartConfig={chartConfig}
-          />
-          <TransactionButton categoryId={selectedCategory?._id!} />
-
-          <h2 className="text-lg font-semibold px-4 py-0">Transactions</h2>
           <ScrollArea className="h-full">
-            <div className="p-4 space-y-1">
-              {transactions.length > 0 ? (
-                transactions.map((transaction) => (
-                  <TransactionCard
-                    transaction={transaction}
-                    key={transaction._id}
-                  />
-                ))
-              ) : (
-                <p>No transactions available for this category.</p>
-              )}
+            <TrackChart
+              chartData={transactionsChartData}
+              chartConfig={chartConfig}
+            />
+            <TransactionButton categoryId={selectedCategory?._id!} transactionRefresh={loadTransactions} />
+
+            <div className="flex justify-center items-center">
+              <h2 className="text-lg font-semibold px-4 py-0">Transactions</h2>
+              <Button
+                size={"sm"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  loadTransactions(true);
+                }}
+              >
+                {transactionsLoading ? (
+                  <>
+                    Refreshing.... &nbsp;&nbsp;
+                    <Loader2 className="animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Refresh &nbsp;&nbsp;
+                    <RefreshCcw />
+                  </>
+                )}
+              </Button>
             </div>
+
+            {transactionsLoading ? (
+              <Loader />
+            ) : (
+              <div className="p-4 space-y-1">
+                {transactions.length > 0 ? (
+                  transactions.map((transaction) => (
+                    <TransactionCard
+                      transaction={transaction}
+                      key={transaction._id}
+                    />
+                  ))
+                ) : (
+                  <p>No transactions available for this category.</p>
+                )}
+              </div>
+            )}
           </ScrollArea>
 
           <DrawerFooter></DrawerFooter>

@@ -14,8 +14,8 @@ import { Link } from "next-view-transitions";
 export default function Footer() {
   const currentYear = new Date().getFullYear(); // returns only the year, e.g., 2024
   return (
-    <footer className="bg-primary-900 text-white rounded-t-xl py-6 sticky ">
-      <div className="container mx-auto px-4">
+    <footer className=" pb-20 ">
+      <div className="container mx-auto px-4 py-8 bg-primary-900 text-white rounded-xl">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 space-y-4">
             <Logo />

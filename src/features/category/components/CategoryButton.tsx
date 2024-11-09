@@ -5,7 +5,8 @@ import React, { useState } from 'react'
 
 import { CategoryForm } from './CategoryForm'
 
-export default function CategoryButton() {
+export default function CategoryButton(props: { categoryRefresh: (refresh: boolean) => void }) {
+  const {categoryRefresh} = props;
     const [isCreateCategoryDrawerOpen, setIsCreateCategoryDrawerOpen] = useState(false);
   return (
     <>
@@ -24,7 +25,7 @@ export default function CategoryButton() {
               Fill in the details to create a new category.
             </DrawerDescription>
           </DrawerHeader>
-          <CategoryForm isOpen={setIsCreateCategoryDrawerOpen} />
+          <CategoryForm isOpen={setIsCreateCategoryDrawerOpen} categoryRefresh={categoryRefresh} />
           <DrawerClose asChild className="absolute right-4 top-4 ">
               <Button
                 variant="outline"

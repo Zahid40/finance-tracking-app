@@ -17,6 +17,7 @@ import {
 
 export default function TransactionButton(props: {
   categoryId: TransactionType["categoryId"];
+  transactionRefresh: (refresh?: boolean) => Promise<void>;
 }) {
   const { categoryId } = props;
   const [open, setOpen] = useState(false);
@@ -54,6 +55,7 @@ export default function TransactionButton(props: {
             categoryId={categoryId}
             transactionType={transactionType}
             isOpen={setOpen}
+            transactionRefresh={props.transactionRefresh}
           />
         </DialogContent>
       </Dialog>
