@@ -24,7 +24,8 @@ export function NumberTicker({
     damping: 60,
     stiffness: 100,
   })
-  const isInView = useInView(ref, { once: true, margin: '0px' })
+ 
+  const isInView = useInView(ref as React.RefObject<Element>, { once: true, margin: '0px' })
 
   useEffect(() => {
     if (isInView) {
