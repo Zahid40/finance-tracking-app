@@ -30,7 +30,7 @@ export default function TransactionCard(props: TransactionCardProps) {
         >
           {transaction.transactionType === "Credit"
               ? "+"
-              : "-"}{currencyFormatter(transaction.transactionAmount)}
+              : "-"}{currencyFormatter(transaction.transactionAmount , 0)}
         </p>
       <p className="text-xs text-end">
         {toCapitalizeFirstLetter(

@@ -172,12 +172,14 @@ export default function Component() {
         onOpenChange={() => setSelectedCategory(null)}
       >
         <DrawerContent className="h-[100dvh] max-w-3xl m-auto">
-          <DrawerHeader>
+          <DrawerHeader className="flex">
+            <div>
             <CategoryMenuButton categoryId={selectedCategory?._id!} />
             <DrawerTitle>{selectedCategory?.name}</DrawerTitle>
             <DrawerDescription>
               Category details and transactions
             </DrawerDescription>
+            </div>
             <DrawerClose asChild className="absolute right-4 top-4 ">
               <Button
                 variant="outline"
@@ -192,7 +194,11 @@ export default function Component() {
               chartData={transactionsChartData}
               chartConfig={chartConfig}
             />
-            <TransactionButton categoryId={selectedCategory?._id!} transactionRefresh={loadTransactions} />
+            <TransactionButton
+              categoryId={selectedCategory?._id!}
+              transactionRefresh={loadTransactions}
+              categoryRefresh={loadCategories}
+            />
 
             <div className="flex justify-center items-center">
               <h2 className="text-lg font-semibold px-4 py-0">Transactions</h2>

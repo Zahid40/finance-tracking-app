@@ -26,6 +26,7 @@ import {
   SignInButton,
   SignUpButton,
 } from "@/features/auth/components/AuthButtons";
+import Image from "next/image";
 import { userNavLinks } from "../../const";
 
 export default function UserNavDropdown() {
@@ -42,7 +43,11 @@ export default function UserNavDropdown() {
               />
             </SignedOut>
             <SignedIn>
-              <AvatarImage src={user?.imageUrl} alt="User avatar" />
+              <AvatarImage
+                src={user?.imageUrl}
+                alt="User avatar"
+                style={{ objectFit: "cover" }}
+              />
             </SignedIn>
             {/* <AvatarImage src="https://placehold.co/32x32/white/green?text=U" alt="User avatar" /> */}
             <AvatarFallback>U</AvatarFallback>
@@ -52,8 +57,16 @@ export default function UserNavDropdown() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <SignedIn>
           <>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
+            <DropdownMenuLabel className="font-normal flex flex-col gap-2 justify-center items-center">
+              <Image
+                src={user?.imageUrl!}
+                alt="User avatar"
+                style={{ objectFit: "cover" }}
+                width={50}
+                height={50}
+                className="rounded-full h-14 w-14 border-2 border-primary-600"
+              />
+              <div className="flex flex-col items-center space-y-1">
                 <p className="text-sm font-medium leading-none">
                   {user?.fullName}
                 </p>

@@ -38,7 +38,7 @@ export default function Navbar() {
 
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-50">
+    <header className="md:sticky top-0 z-50">
       <nav className="container grid grid-cols-2 md:grid-cols-3 max-w-3xl items-center justify-between px-4 py-3 bg-background shadow-sm rounded-b-2xl border">
         <Logo />
         {!isMobile && (
@@ -70,15 +70,6 @@ export default function Navbar() {
           {!isMobile && (
             <SignedIn>
               <UserNavDropdown />
-              {/* Mount the UserButton component */}
-              {/* <UserButton
-              showName={!isMobile}
-              userProfileMode="navigation"
-              userProfileUrl="/profile"
-              appearance={{
-                baseTheme: resolvedTheme === "dark" ? dark : undefined,
-              }}
-            /> */}
             </SignedIn>
           )}
           <SignedOut>

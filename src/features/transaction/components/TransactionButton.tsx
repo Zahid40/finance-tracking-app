@@ -18,6 +18,7 @@ import {
 export default function TransactionButton(props: {
   categoryId: TransactionType["categoryId"];
   transactionRefresh: (refresh?: boolean) => Promise<void>;
+  categoryRefresh: (refresh?: boolean) => Promise<void>;
 }) {
   const { categoryId } = props;
   const [open, setOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function TransactionButton(props: {
               onClick={() => setTransactionType("Credit")}
               variant="default"
             >
-              <Plus className="mr-2 h-4 w-4" /> Add
+              <Plus className="mr-2 h-4 w-4" /> Gain
             </Button>
           </DialogTrigger>
           <DialogTrigger asChild className="flex-1">
@@ -40,7 +41,7 @@ export default function TransactionButton(props: {
               onClick={() => setTransactionType("Debit")}
               variant="destructive"
             >
-              <Minus className="mr-2 h-4 w-4" /> Subtract
+              <Minus className="mr-2 h-4 w-4" /> Spend
             </Button>
           </DialogTrigger>
         </div>
@@ -56,6 +57,7 @@ export default function TransactionButton(props: {
             transactionType={transactionType}
             isOpen={setOpen}
             transactionRefresh={props.transactionRefresh}
+            categoryRefresh={props.categoryRefresh}
           />
         </DialogContent>
       </Dialog>

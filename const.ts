@@ -1,8 +1,15 @@
-import { Building, Home, Layers3, Settings, User } from "lucide-react";
+import {
+  Building,
+  Home,
+  Layers3,
+  LockIcon,
+  Settings,
+  User,
+} from "lucide-react";
 
 //App Info
 export const AppName = "Fintraz";
-export const AppUrl = 'https://fintraz.vercel.app'
+export const AppUrl = "https://fintraz.vercel.app";
 export const AppLogo = "/icon/logo-round.svg";
 export const AppTitle = `${AppName} - Smart Finance Tracker for Budgeting & Expenses`;
 export const AppDescriptionShort =
@@ -66,9 +73,11 @@ export const AppAuthors = [{ name: "Zahid", url: "https://nextjs.org" }];
 export const AppCreator = "Zahid";
 export const AppPublisher = "Zahid";
 
-export const AppDeveloper ={
-  name :'Zahid' , website:'https://zahid.vercel.app' , role :'Developer'
-}
+export const AppDeveloper = {
+  name: "Zahid",
+  website: "https://zahid.vercel.app",
+  role: "Developer",
+};
 
 //Social Information
 export const AppEmail = "zahiddevz@gmail.com";
@@ -94,10 +103,9 @@ export const AppBehance = `https://www.behance.net/${AppBehanceUsername}`;
 export const AppBuyMeACoffeeUsername = "zahid40";
 export const AppBuyMeACoffee = `https://buymeacoffee.com/${AppBuyMeACoffeeUsername}`;
 
-
-export const AppGithubRepoName = 'finance-tracking-app'
-export const GithubRepoLink = `${AppGithub}/${AppGithubRepoName}`
-export const GithubApiRepoLink = `https://api.github.com/repos/${AppGithubUsername}/${AppGithubRepoName}`
+export const AppGithubRepoName = "finance-tracking-app";
+export const GithubRepoLink = `${AppGithub}/${AppGithubRepoName}`;
+export const GithubApiRepoLink = `https://api.github.com/repos/${AppGithubUsername}/${AppGithubRepoName}`;
 
 //Nav Data
 export const navLinks = {
@@ -109,11 +117,18 @@ export const navLinks = {
       title: "Profile",
       link: "/profile",
       icon: User,
+      root: {
+        security: {
+          title: "security",
+          link: "/profile/security",
+          icon: LockIcon,
+        },
+      },
     },
-    settings:{
-      title:"Settings" ,
-      link:"/settings",
-      icon : Settings
+    settings: {
+      title: "Settings",
+      link: "/settings",
+      icon: Settings,
     },
     about: {
       title: "About",
@@ -136,7 +151,7 @@ export const navLinks = {
   },
 };
 export const NavLinks = [navLinks, navLinks.root.category, navLinks.root.about];
-export const userNavLinks = [navLinks.root.profile , navLinks.root.settings];
+export const userNavLinks = [navLinks.root.profile, navLinks.root.profile.root.security];
 
 export const FooterLinks = {
   Legal: [navLinks.root.terms, navLinks.root.privacyPolicy],
