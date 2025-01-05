@@ -15,7 +15,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { fetchCategories } from "@/features/category/action/category.action";
-import { useSession, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import CategoryCard from "@/features/category/components/CategoryCard";
 import { TrackChart } from "@/features/transaction/components/TransactionChart";
@@ -174,11 +174,11 @@ export default function Component() {
         <DrawerContent className="h-[100dvh] max-w-3xl m-auto">
           <DrawerHeader className="flex">
             <div>
-            <CategoryMenuButton categoryId={selectedCategory?._id!} />
-            <DrawerTitle>{selectedCategory?.name}</DrawerTitle>
-            <DrawerDescription>
-              Category details and transactions
-            </DrawerDescription>
+              <CategoryMenuButton categoryId={selectedCategory?._id!} />
+              <DrawerTitle>{selectedCategory?.name}</DrawerTitle>
+              <DrawerDescription>
+                Category details and transactions
+              </DrawerDescription>
             </div>
             <DrawerClose asChild className="absolute right-4 top-4 ">
               <Button
