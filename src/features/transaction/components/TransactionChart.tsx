@@ -26,7 +26,7 @@ export const description = "A line chart with a label"
 export function TrackChart(props:{chartData : TransactionsChartDataType[] , chartConfig : ChartConfig }) {
   const {chartData , chartConfig } = props;
   return (
-    <Card className="border-0 shadow-none p-0">
+    <Card className="border-0 shadow-none p-0 rounded-none bg-background">
       <CardContent className="p-4">
         <ChartContainer config={chartConfig}>
           <LineChart

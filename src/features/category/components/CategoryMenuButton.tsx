@@ -10,11 +10,12 @@ import {
 import { Ellipsis, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
-import { deleteCategory } from "../action/category.action";
+import { deleteCategory } from "../../../actions/category.action";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export default function CategoryMenuButton(props: { categoryId: string }) {
-  const { categoryId } = props;
+export default function CategoryMenuButton(props: { categoryId: string , className?: string}) {
+  const { categoryId , className } = props;
   const { user } = useUser();
   const userId = user?.publicMetadata.dbUserId as string;
 
@@ -35,7 +36,7 @@ export default function CategoryMenuButton(props: { categoryId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="w-8 h-8 flex justify-center items-center bg-secondary rounded-lg"
+        className={cn("w-8 h-8 flex justify-center items-center bg-secondary rounded-lg" , className)}
       >
         <Ellipsis />
       </DropdownMenuTrigger>

@@ -4,15 +4,16 @@ import { Plus } from 'lucide-react'
 import React, { useState } from 'react'
 
 import { CategoryForm } from './CategoryForm'
+import { cn } from '@/lib/utils'
 
-export default function CategoryButton(props: { categoryRefresh: (refresh: boolean) => void }) {
-  const {categoryRefresh} = props;
+export default function CategoryButton({className}:{className?:string}) {
+  
     const [isCreateCategoryDrawerOpen, setIsCreateCategoryDrawerOpen] = useState(false);
   return (
     <>
         <Button
         variant={"secondary"}
-        className="mb-8 w-full"
+        className={cn("" , className)}
         onClick={() => setIsCreateCategoryDrawerOpen(true)}
       >
         <Plus className="size-4" /> Create Category
@@ -25,7 +26,7 @@ export default function CategoryButton(props: { categoryRefresh: (refresh: boole
               Fill in the details to create a new category.
             </DrawerDescription>
           </DrawerHeader>
-          <CategoryForm isOpen={setIsCreateCategoryDrawerOpen} categoryRefresh={categoryRefresh} />
+          <CategoryForm isOpen={setIsCreateCategoryDrawerOpen}  />
           <DrawerClose asChild className="absolute right-4 top-4 ">
               <Button
                 variant="outline"

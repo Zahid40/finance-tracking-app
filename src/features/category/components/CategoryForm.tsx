@@ -1,6 +1,7 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Form,
@@ -17,11 +18,13 @@ import { Input } from "@/components/ui/input";
 import { CategoryFormSchema } from "../schema/category.schema";
 import { CategoryFormType } from "../types/category.type";
 import { useUser } from "@clerk/nextjs";
-import { createCategory } from "@/features/category/action/category.action";
+import { createCategory } from "@/actions/category.action";
 
-export function CategoryForm(props: { isOpen: (open: boolean) => void , categoryRefresh: (refresh: boolean) => void }) {
+export function CategoryForm(props: { isOpen: (open: boolean) => void }) {
+  const queryClient = useQueryClient();
   const { user } = useUser();
   const userId = user?.publicMetadata.dbUserId as string;
+
   const form = useForm<CategoryFormType>({
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
@@ -30,30 +33,33 @@ export function CategoryForm(props: { isOpen: (open: boolean) => void , category
     },
   });
 
-  async function onSubmit(data: CategoryFormType) {
-    // Call server action directly
-    const result = await createCategory(data, userId);
+  const mutation = useMutation({
+    mutationFn: (data: CategoryFormType) => createCategory(data, userId),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Category created successfully!");
+        queryClient.invalidateQueries({ queryKey: ["category"] }); // revalidate category list
+        form.reset();
+        props.isOpen(false);
+      } else {
+        toast.error(result.errors?.join(", ") || "Failed to create category");
+      }
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+  });
 
-    if (result.success) {
-      toast.success("Category created successfully!");
-      form.reset();
-      props.isOpen(false); // Close the drawer on successful submission
-      props.categoryRefresh(true);
-    } else {
-      // Display validation errors or other errors returned by the action
-      toast.error(result.errors?.join(", ") || "Failed to create category");
-    }
+  function onSubmit(data: CategoryFormType) {
+    mutation.mutate(data);
   }
 
   return (
-    <div className="flex  items-center justify-center  p-4">
-      <Card className="w-full max-w-3xl  shadow-lg">
+    <div className="flex items-center justify-center p-4">
+      <Card className="w-full max-w-3xl shadow-lg">
         <CardContent className="mt-4">
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -64,7 +70,7 @@ export function CategoryForm(props: { isOpen: (open: boolean) => void , category
                       <Input placeholder="Bankz" type="text" {...field} />
                     </FormControl>
                     <FormDescription>
-                      Category name eg : Bank1 , Investment2
+                      Category name eg: Bank1, Investment2
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -99,8 +105,12 @@ export function CategoryForm(props: { isOpen: (open: boolean) => void , category
                 )}
               />
 
-              <Button className="w-full py-8" type="submit">
-                Create Category
+              <Button
+                className="w-full py-8"
+                type="submit"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Creating..." : "Create Category"}
               </Button>
             </form>
           </Form>

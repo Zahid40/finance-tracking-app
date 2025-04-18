@@ -3,12 +3,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  TransactionFormType,
+  TransactionType,
+} from "../types/transaction.types";
+import { TransactionFormSchema } from "../schema/transaction.schema";
+import { createTransaction } from "../../../actions/transaction.action";
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,26 +23,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useUser } from "@clerk/nextjs";
-import {
-  TransactionFormType,
-  TransactionType,
-} from "../types/transaction.types";
-import { TransactionFormSchema } from "../schema/transaction.schema";
-import { createTransaction } from "../action/transaction.action";
 import { Textarea } from "@/components/ui/textarea";
 
 export function TransactionForm(props: {
   categoryId: TransactionType["categoryId"];
   transactionType: TransactionType["transactionType"];
   isOpen: (open: boolean) => void;
-  transactionRefresh: (refresh?: boolean) => Promise<void>;
-  categoryRefresh: (refresh?: boolean) => Promise<void>;
 }) {
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const userId = user?.publicMetadata.dbUserId as string;
   const { categoryId, transactionType: initialTransactionType } = props;
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<TransactionFormType>({
     resolver: zodResolver(TransactionFormSchema),
@@ -48,39 +45,40 @@ export function TransactionForm(props: {
     },
   });
 
-  async function onSubmit(data: TransactionFormType) {
-    setIsSubmitting(true);
-    const finalData: TransactionType = {
-      userId,
-      categoryId,
-      ...data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    try {
-      const result = await createTransaction(finalData);
-
+  const mutation = useMutation({
+    mutationFn: async (data: TransactionFormType) => {
+      const finalData: TransactionType = {
+        userId,
+        categoryId,
+        ...data,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      return await createTransaction(finalData);
+    },
+    onSuccess: (result) => {
       if (result.success) {
-        toast.success("Transaction created successfully!");
         form.reset();
         props.isOpen(false);
-        props.transactionRefresh(true);
-        props.categoryRefresh(true);
+        queryClient.invalidateQueries({
+          queryKey: ["transaction", categoryId],
+        });
+        queryClient.invalidateQueries({ queryKey: ["category"] });
       } else {
         toast.error(
           result.errors?.join(", ") || "Failed to create transaction"
         );
       }
-    } catch (error) {
+    },
+    onError: () => {
       toast.error("An unexpected error occurred");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+    },
+  });
+
+  const onSubmit = (data: TransactionFormType) => mutation.mutate(data);
 
   return (
-    <Card className="w-full ">
+    <Card className="w-full">
       <CardContent className="mt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -171,10 +169,10 @@ export function TransactionForm(props: {
         <Button
           type="submit"
           onClick={form.handleSubmit(onSubmit)}
-          disabled={isSubmitting}
+          disabled={mutation.isPending}
           className="w-full"
         >
-          {isSubmitting ? "Submitting..." : "Create Transaction"}
+          {mutation.isPending ? "Submitting..." : "Create Transaction"}
         </Button>
       </CardFooter>
     </Card>
