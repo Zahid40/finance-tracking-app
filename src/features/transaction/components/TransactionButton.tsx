@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 
 import { Plus, Minus } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 export default function TransactionButton(props: {
   categoryId: TransactionType["categoryId"];
@@ -24,39 +24,39 @@ export default function TransactionButton(props: {
     useState<TransactionType["transactionType"]>("Credit");
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <div className="flex justify-center items-center w-full m-auto space-x-2 p-4">
-          <DialogTrigger asChild className="flex-1">
+      <Drawer open={open} onOpenChange={setOpen}>
+        <div className="flex justify-center items-center w-full m-auto space-x-2 py-4">
+          <DrawerTrigger asChild className="flex-1">
             <Button
               onClick={() => setTransactionType("Credit")}
               variant="default"
             >
               <Plus className="mr-2 h-4 w-4" /> Gain
             </Button>
-          </DialogTrigger>
-          <DialogTrigger asChild className="flex-1">
+          </DrawerTrigger>
+          <DrawerTrigger asChild className="flex-1">
             <Button
               onClick={() => setTransactionType("Debit")}
               variant="destructive"
             >
               <Minus className="mr-2 h-4 w-4" /> Spend
             </Button>
-          </DialogTrigger>
+          </DrawerTrigger>
         </div>
-        <DialogContent className=" max-w-xl m-auto">
-          <DialogHeader>
-            <DialogTitle>Transaction</DialogTitle>
-            <DialogDescription>
+        <DrawerContent className=" max-w-xl m-auto">
+          <DrawerHeader>
+            <DrawerTitle>Add Transaction</DrawerTitle>
+            <DrawerDescription>
               Fill in the details for your transaction.
-            </DialogDescription>
-          </DialogHeader>
+            </DrawerDescription>
+          </DrawerHeader>
           <TransactionForm
             categoryId={categoryId}
             transactionType={transactionType}
             isOpen={setOpen}
           />
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

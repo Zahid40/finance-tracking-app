@@ -13,7 +13,7 @@ export default function BottomNavigation() {
     <div className="   fixed bottom-0   left-0 z-10 w-full px-4">
       <div
         className={cn(
-          `container max-w-3xl grid grid-cols-5 place-items-center bg-background px-3 border  w-full rounded-t-sm`
+          `container max-w-3xl grid grid-cols-4 place-items-center bg-background px-3 border  w-full rounded-t-sm`
         )}
       >
         {NavLinks.slice(0, 2).map((e, index) => {
@@ -37,9 +37,9 @@ export default function BottomNavigation() {
           );
         })}
 
-        <div className="flex justify-center items-center flex-col font-normal relative bottom-4">
+        {/* <div className="flex justify-center items-center flex-col font-normal relative bottom-4">
           <Button className="w-14 h-14 rounded-full shadow-2xl shadow-primary-500">+</Button>
-        </div>
+        </div> */}
 
         {NavLinks.slice(2, 3).map((e, index) => {
           const isActiveRoute = pathname === e.link;

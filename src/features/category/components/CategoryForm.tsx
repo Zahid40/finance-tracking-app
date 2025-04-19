@@ -56,50 +56,52 @@ export function CategoryForm(props: { isOpen: (open: boolean) => void }) {
 
   return (
     <div className="flex items-center justify-center p-4">
-      <Card className="w-full max-w-3xl shadow-lg">
-        <CardContent className="mt-4">
+      <Card className="w-full max-w-3xl bg-background border-none shadow-none">
+        <CardContent className="my-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Bankz" type="text" {...field} />
+                      <Input
+                        className="text-2xl  border-none focus-visible:ring-0 "
+                        placeholder="Bank 1"
+                        type="text"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>
-                      Category name eg: Bank1, Investment2
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <p className="text-sm">with current balance</p>
 
               <FormField
                 control={form.control}
                 name="current_balance"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Balance</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="500"
-                        type="number"
-                        value={field.value || ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              ? parseFloat(e.target.value)
-                              : undefined
-                          )
-                        }
-                      />
+                      <div className="flex gap-2 text-5xl items-center">
+                        <span>₹</span>
+                        <Input
+                          placeholder="500"
+                          type="number"
+                          value={field.value || ""}
+                          className="border-none text-5xl focus-visible:ring-0 "
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? parseFloat(e.target.value)
+                                : undefined
+                            )
+                          }
+                        />
+                      </div>
                     </FormControl>
-                    <FormDescription>
-                      Current amount in this category
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -110,7 +112,7 @@ export function CategoryForm(props: { isOpen: (open: boolean) => void }) {
                 type="submit"
                 disabled={mutation.isPending}
               >
-                {mutation.isPending ? "Creating..." : "Create Category"}
+                {mutation.isPending ? "Adding..." : "Add Category"}
               </Button>
             </form>
           </Form>

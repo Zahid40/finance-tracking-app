@@ -12,18 +12,18 @@ export default function CategoryButton({className}:{className?:string}) {
   return (
     <>
         <Button
-        variant={"secondary"}
-        className={cn("" , className)}
+        variant={"outline"} size={'sm'}
+        className={cn("rounded-full gap-2" , className)}
         onClick={() => setIsCreateCategoryDrawerOpen(true)}
       >
-        <Plus className="size-4" /> Create Category
+        <Plus className="size-4" /> Add Category
       </Button>
       <Drawer open={isCreateCategoryDrawerOpen} onOpenChange={setIsCreateCategoryDrawerOpen}>
         <DrawerContent className="max-w-3xl m-auto">
-          <DrawerHeader >
-            <DrawerTitle>Create New Category</DrawerTitle>
+          <DrawerHeader className='' >
+            <DrawerTitle>Add Category</DrawerTitle>
             <DrawerDescription>
-              Fill in the details to create a new category.
+              Fill in the details to add a new category.
             </DrawerDescription>
           </DrawerHeader>
           <CategoryForm isOpen={setIsCreateCategoryDrawerOpen}  />

@@ -75,10 +75,12 @@ export function TransactionForm(props: {
     },
   });
 
+  const transactionTypeWatcher = form.watch("transactionType");
+
   const onSubmit = (data: TransactionFormType) => mutation.mutate(data);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-3xl bg-background border-none shadow-none">
       <CardContent className="mt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -87,7 +89,6 @@ export function TransactionForm(props: {
               name="transactionType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Transaction Type</FormLabel>
                   <FormControl>
                     <div className="flex space-x-2">
                       {["Credit", "Debit"].map((type) => (
@@ -115,43 +116,53 @@ export function TransactionForm(props: {
             />
             <FormField
               control={form.control}
-              name="name"
+              name="transactionAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Transaction Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Groceries, Salary" {...field} />
+                    <div className="flex gap-2 text-5xl items-center ">
+                      <p className="text-nowrap">₹</p>
+                      <Input
+                        type="number"
+                        className="text-5xl border-none focus-visible:ring-0 w-min"
+                        placeholder="50"
+                        value={field.value || ""}
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        }
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <p className="text-sm">
+              {" "}
+              {transactionTypeWatcher === "Credit" ? "gain from " : "spend to "}
+            </p>
             <FormField
               control={form.control}
-              name="transactionAmount"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      placeholder="0.00"
+                      className="text-xl focus-visible:ring-0 border-none"
+                      placeholder="e.g., Groceries, Salary"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value) || 0)
-                      }
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (optional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Add any additional details here..."
@@ -170,9 +181,17 @@ export function TransactionForm(props: {
           type="submit"
           onClick={form.handleSubmit(onSubmit)}
           disabled={mutation.isPending}
-          className="w-full"
+          className="w-full py-8"
+          size={"lg"}
+          variant={
+            transactionTypeWatcher === "Credit" ? "default" : "destructive"
+          }
         >
-          {mutation.isPending ? "Submitting..." : "Create Transaction"}
+          {mutation.isPending
+            ? "Adding..."
+            : transactionTypeWatcher === "Credit"
+              ? "Add Credits"
+              : "Add Spends"}
         </Button>
       </CardFooter>
     </Card>

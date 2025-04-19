@@ -168,25 +168,55 @@ export const deleteTransaction = async (
   userId: string,
   transactionId: string
 ): Promise<{ success: boolean; message?: string }> => {
-  // Connect to the database
   await connect();
 
   try {
-    // Find and delete the category by userId and categoryId
-    await Transaction.findOneAndDelete({
+    // Step 1: Find the transaction
+    const transaction = await Transaction.findOne({
       _id: transactionId,
       userId,
     });
+    if (!transaction) {
+      return { success: false, message: "Transaction not found." };
+    }
+
+    // Step 2: Find the related category
+    const category = await Category.findById(transaction.categoryId);
+    if (!category) {
+      return { success: false, message: "Related category not found." };
+    }
+
+    // Step 3: Reverse the effect of the transaction on the category's balance
+    if (transaction.transactionType === "Credit") {
+      category.current_balance -= transaction.transactionAmount;
+    } else if (transaction.transactionType === "Debit") {
+      category.current_balance += transaction.transactionAmount;
+    }
+
+    // Optional: Ensure balance doesn't go negative (if required)
+    if (category.current_balance < 0) {
+      return {
+        success: false,
+        message:
+          "Cannot delete this transaction due to resulting negative balance.",
+      };
+    }
+
+    category.updatedAt = new Date();
+    await category.save();
+
+    // Step 4: Delete the transaction
+    await Transaction.findByIdAndDelete(transactionId);
 
     return {
       success: true,
-      message: "Category and related transactions deleted successfully",
+      message: "Transaction deleted and category balance updated.",
     };
   } catch (error) {
-    console.error("Error deleting category:", error);
+    console.error("Error deleting transaction:", error);
     return {
       success: false,
-      message: "Failed to delete category and transactions",
+      message: "Failed to delete transaction.",
     };
   }
 };

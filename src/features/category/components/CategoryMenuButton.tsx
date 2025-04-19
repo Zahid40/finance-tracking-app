@@ -1,59 +1,89 @@
 import React from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Ellipsis, Trash2 } from "lucide-react";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Edit2, Ellipsis, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { deleteCategory } from "../../../actions/category.action";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTransitionRouter } from "next-view-transitions";
 
-export default function CategoryMenuButton(props: { categoryId: string , className?: string}) {
-  const { categoryId , className } = props;
+export default function CategoryMenuButton(props: {
+  categoryId: string;
+  className?: string;
+}) {
+  const { categoryId, className } = props;
   const { user } = useUser();
   const userId = user?.publicMetadata.dbUserId as string;
+  const queryClient = useQueryClient();
+  const router = useTransitionRouter();
 
-  async function handleDeleteCategory(categoryId: string) {
-    try {
-      const result = await deleteCategory(userId, categoryId);
-      if (result.success) {
-        toast.success(result.message); // "Category and related transactions deleted successfully"
-      } else {
-        toast.error(result.message || "Failed to delete category and transactions");
+  const mutation = useMutation({
+    mutationFn: () => deleteCategory(userId, categoryId),
+    onSuccess: (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: ["category"] });
+        toast.success(data.message);
+        router.push("/category");
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Error deleting category:", error);
       toast.error("An unexpected error occurred. Please try again.");
-    }
-  }
+    },
+  });
+
+  const handleDeleteCategory = () => {
+    mutation.mutate();
+  };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className={cn("w-8 h-8 flex justify-center items-center bg-secondary rounded-lg" , className)}
-      >
-        <Ellipsis />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Button
-            variant={"ghost"}
-            className="w-full"
-            onClick={() => handleDeleteCategory(categoryId)} // Pass the function as a callback
-          >
-            <Trash2 />
-            Delete
+    <div className="flex gap-2">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant={"destructive"} size={"icon"}>
+            <Trash2 className="size-4" />
           </Button>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete
+              category and remove all related transactions from our servers.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-row gap-2 w-full sm:justify-start">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                variant={"destructive"}
+                onClick={handleDeleteCategory} // Pass the function as a callback
+                className="w-full gap-2 "
+              >
+                <Trash2 className="size-4" /> Delete Category
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* <Button variant={"secondary"} size={"icon"}>
+        <Edit2 className="size-4" />
+      </Button> */}
+    </div>
   );
 }

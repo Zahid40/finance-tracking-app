@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart"
 import { TransactionsChartDataType } from "@/features/transaction/types/transaction.types"
 import { currencyFormatter } from "@/utils/currencyFormatter.utils"
+import { format } from "date-fns"
 
 export const description = "A line chart with a label"
 
@@ -27,7 +28,7 @@ export function TrackChart(props:{chartData : TransactionsChartDataType[] , char
   const {chartData , chartConfig } = props;
   return (
     <Card className="border-0 shadow-none p-0 rounded-none bg-background">
-      <CardContent className="p-4">
+      <CardContent className="p-0">
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
@@ -45,25 +46,9 @@ export function TrackChart(props:{chartData : TransactionsChartDataType[] , char
               axisLine={true}
               tickMargin={8}
               tickFormatter={(value) => {
-                return new Date(value).toLocaleDateString("en-US", {
-                  hour:"2-digit",
-                  minute:'numeric',
-                  month: "short",
-                  day: "numeric",
-                })
+                return format(new Date(value), "MMM dd")
               }}
             />
-            {/* <ChartTooltip
-              cursor={true}
-              content={<ChartTooltipContent indicator="line" nameKey="name" className="w-40" labelFormatter={(value) => {
-                return new Date(value).toLocaleDateString("en-US", {
-                  hour:"2-digit",
-                  minute:'numeric',
-                  month: "short",
-                  day: "numeric",
-                })
-              }} />}
-            /> */}
             <ChartTooltip
               content={
                 <ChartTooltipContent
